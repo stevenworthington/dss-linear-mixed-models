@@ -1,0 +1,34 @@
+---
+title: "Linear Mixed Models"
+author: ""
+date: "`r format(Sys.Date(), '%B %Y')`"
+description: "Linear Mixed Models"
+github-repo: "stevenworthington/dss-linear-mixed-models"
+site: "bookdown::bookdown_site"
+documentclass: book
+geometry: "margin=1.5in"
+biblio-style: apalike
+link-citations: yes
+---
+
+# Introduction {-}
+
+* Reports in Rmarkdown: <https://www.stat.cmu.edu/~cshalizi/rmarkdown/>
+* Math in Rmd: <https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html>
+* Rmd example: <http://www.math.mcgill.ca/yyang/regression/RMarkdown/example.html>
+
+## Table of Contents {-}
+
+Here, we outline how the guide is organized into parts.
+
+1. First, we...
+2. Second, we...
+3. Lastly, we...
+
+[Here we provide an outside link to important content](https://www.rstudio.com/wp-content/uploads/2015/03/devtools-cheatsheet.pdf) which puts some useful information for this tutorial/workshop at our fingertips.
+
+Here we specify where people can provide feedback! Please email help@iq.harvard.edu
+
+## Authors and Sources {-}
+
+Here we acknowledge a few people who helped make this tutorial/workshop possible. We also reference any sources that material was taken from.

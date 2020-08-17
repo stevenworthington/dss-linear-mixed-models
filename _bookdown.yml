@@ -1,0 +1,14 @@
+book_filename: 'Data_Science_Workshops'
+
+output_dir: docs
+
+repo: https://github.com/stevenworthington/dss-workshops-stata
+
+rmd_files:
+  - "index.Rmd"
+
+delete_merged_file: true
+
+clean: [packages.bib, bookdown.bbl]
+
+new_session: no
