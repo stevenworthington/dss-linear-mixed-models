@@ -4,5 +4,6 @@ Title: Does not matter.
 Version: 0.0.1
 Imports:
     bookdown,
-    reticulate
+    reticulate,
+    lme4
 Remotes: rstudio/bookdown

@@ -1,0 +1,350 @@
+
+```{r, echo=FALSE, results="hide"}
+hsb <- read.csv("dataSets/hsb.csv")
+hsb <- within(hsb, {
+  sector <- factor(schtype, levels = 0:1, labels = c("public", "catholic"))
+  id <- factor(schid)
+  math <- mathach
+})
+
+library(lme4)
+```
+
+# Generalized linear models
+
+## Lecture 5.1
+
+**Generalized Linear Models**
+
+### Poisson models
+
+**Case study:** police stops by ethnic groups. Is the rate of police stops higher or lower for certain groups and precincts than we would predict given amount of crime. Variables are: police prencint, ethnicity, number of past arrests, number of stop and frisk events, and population. The unit of analysis is the police precinct level over a certain period of time.
+
+**Estimation strategy:** 
+
+1. We can watch any given precinct
+2. The number of stops are *count data*
+3. Goal: is the number of stops relatively larger given crime levels?
+
+Want to estimate the **rate**: the numbner of stop and frisk per unit time.
+$$
+Y_i \sim Poisson(\theta_i)
+$$
+For each unit, at any given moment, the chance of seeing an event is the same as at any other moment. This chance is the **rate** we're trying to estimate.
+
+The **rate** is the expected number of observations per unit time. With high rates (>= 15), you can probably get away with a Gaussian model, though this would be a model with additive effects (unless the response is logged), rather than the multiplicative effects provided my Poisson models.
+
+The mean and variance in Poisson are tied together. Poisson distributions are indexed by a single *parameter* $\theta$. 
+
+We model the connection between our observed outcome and a rate parameter:
+$$
+Y_i \sim Poisson(\theta_i)
+$$
+And then we model our rate parameter as a function of our covariates:
+$$
+\theta_i = exp(\eta) \\
+\color{grey}{\textrm{The linear predictor:}} \quad \eta = X_i\beta
+$$
+
+Say we have:
+$$
+Y_i = Poisson(exp(2.8 + 0.012X_{i1} - 0.20X_{i2}))
+$$
+$$
+\theta_i = exp(2.8 + 0.012X_{i1} - 0.20X_{i2}) \\
+= e^{2.8} \times e^{0.012X_{i1}} \times e^{-0.20X_{i2}} \\
+\color{grey}{\textrm{Impact of inductrial zone is a scaling on average (rate):}} \quad e^{-0.20\times1} = 0.82
+$$
+Need to exponentiate the coefficents before interpreting them as multiplicative effects.
+
+**Exposure** $u_i$ is multplied by rate:
+$$
+Y_i \sim Poisson(u_i\theta_i)
+$$
+**Offset**: like a covariate where the coefficient is fixed at one:
+$$
+\hat{Y_i} = u_i\theta_i = u_i exp(X_i\beta) = exp(log(u_i)) \times exp(X_i\beta) = exp[log(u_i) + X_i\beta] \\
+\color{grey}{\textrm{The offset:}} \quad log(u_i)
+$$
+
+```{r, eval=FALSE}
+mod13 <- glm(stops ~ 1, family = poisson(link = "log"), offset = log(past.arrests), data = stops)
+```
+
+The number of stops, on average, per unit time (so, about half of one stop per unit time).
+$$
+e^{-0.59} = 0.55
+$$
+
+```{r, eval=FALSE}
+mod13 <- glm(stops ~ 1 + ethnicity, family = poisson(link = "log"), offset = log(past.arrests), data = stops)
+```
+
+$$
+stops_i = Poisson(u_i\theta_i) \\
+\theta_i = exp[ \beta_0 + \beta_1Hispanic_i + \beta_2White_i + log(u_i)]
+$$
+where $log(u_i)$ is the log of prior arrests.
+
+Model fitting. Compare difference in likelihoods:
+$$
+D \sim \chi^2_m \\
+E[D] = m
+$$
+
+Add precinct (this is basically a fixed effects model):
+```{r, eval=FALSE}
+mod13 <- glm(stops ~ 1 + ethnicity + precinct, family = poisson(link = "log"), offset = log(past.arrests), data = stops)
+```
+
+**Overdispersion**
+
+The poisson model says **variance depends on rate**. Can use **standardized residuals** to detect overdispersion. Only 5\% of standardized residuals should be outside of $\pm 2$ --- if there is more than that, then there is overdispersion.
+
+Simulation:
+```{r, eval=FALSE}
+N <- 200
+X <- log(runif(N, 0.1, 3))
+exposure <- runif(N, 0.5, 2)
+rate <- 1 + 2 * X
+Y <- rpois(N, lambda = exposure * exp(rate))
+  
+mod14 <- glm(Y ~ X, family = poisson, offset = log(exposure), data = df)  
+yhat <- predict(mod14, type = "response")
+z <- (yhat / ?) ### ??????
+plot()
+```
+
+So, we ask whether our standardized residuals are **standard normal**. Poisson model has its own heteroscasticity built it, but there can be more heteroscasticity than it can deal with.
+
+Can fix overdispersion using an overdispered Poisson model: a *quasipoisson* or *negative binomial* model. These both have extra parameters to allow extra scatter around what you fit.
+
+### Anatomy of a Generalized Linear Model
+
+1. Data
+2. Predictor matrix
+3. Linear predictor
+4. Link function
+
+
+## Lecture 5.2
+
+**Multilevel Logistic Regression**
+
+R&B Ch. 10
+
+**Thailand Retention Data**: students are in schools and are either retained (held back) or not.
+
+$$
+Y_{ij} \sim F(\mu_{ij}, \upsilon) \\
+E[Y_{ij}] = \mu_{ij}
+$$
+$$
+\eta_{ij} = g(\mu_{ij}) \quad \textrm{with} \quad Y_{ij} \sim F(\mu_{ij}, \upsilon)
+$$
+where $eta_{ij}$ is the linear predictor.
+
+$$
+\eta_{ij} = \beta_{0j} + \beta_{1j}X_{1ij} + \beta_{2j}X_{2ij}
+$$
+Note the lack of the residual term - that's extra randomness that happens outside of this equation of the structural component of the model.
+
+$$
+\eta_{ij} = \beta_{0j} + \beta_{1j}X_{1ij} + \beta_{2j}X_{2ij} \\
+p_{ij} = logit^{-1}(\eta_{ij})
+$$
+
+Take out the random slopes for simplicity (the $j$ subscripts on the $\beta_1$ and $\beta_2$), so this is a random intercept model.
+$$
+\eta_{ij} = \beta_{0j} + \beta_{1}X_{1ij} + \beta_{2}X_{2ij}
+$$
+
+Level 2 is still a **vanilla linear model**, because we're modeling the level-1 coefficients, which are continuous:
+$$
+\beta_{qj} = \gamma_{q0} + \gamma_{q1}W_{ij} + ... u_{qi}
+$$
+
+```{r, eval=FALSE}
+mod15 <- glmer(Repeat ~ 1 + (1 | schoolID), data = dat, family = binomial(link = "logit"))
+```
+
+1.  **The thing that gets us from the linear predictor to what we expect = link function.**
+2.  **The thing that gets us from what we expect to what we see = family distribution.**
+
+**KEY POINT:** *Typical* is not the same as population average due to non-linearlity!
+
+ICC - not so useful:
+
+*  ICC is the ratio of level-2 variance to total variance
+*  But different schools have different kids, and so different variances due to binomial
+*  There is no natural ICC ratio here
+*  Instead draw pictures and show people **how much schools vary**.
+
+```{r, eval=FALSE}
+mod15 <- glmer(Repeat ~ 1 + sex + pped + msesc(1 | schoolID), data = dat, family = binomial(link = "logit"))
+```
+
+```{r, eval=FALSE}
+dat$eta_hat <- predict(mod15) # link scale
+dat$eta_hat <- predict(mod15, type = "response") # response scale
+```
+
+### Population average versus individual school
+
+Answering the question: what is the association between `pped` and response **at a specific school**.
+
+
+## Lecture 5.3
+
+**Longitudinal Data with a Binary Outcome**
+
+Reading: R-H & S Ch. 10 (in particular, 10.3 - 10.13)
+
+Toenail infection data: subjects randomly assigned to two antifungal treatments (RCT). Outcome is the separation of toenail from toebed.
+
+1. Did the treatment work? (inference --- are the two groups different from each other?)
+2. Did the treatment work well? (measure the relative speed of how these rates change)
+
+**Looking at missingness**
+
+Look at the pattern of missingness: MAR --- missing at random. The missingness can be deduced from the remaining data. This plays well with MLM.
+
+**Looking at outcome data**
+
+Autocorrelation is an issue. Could think of it as a growth curve on a **latent probability of toenail detachment**.
+
+**Visualizations**
+
+Aggregating the data for visualization: look at proportions for each visit by treatment combo. But people who got better faster might have left the study.
+
+Issues: 1) differential dropout, 2) need to perform inference
+
+
+### Marginal models: population average effects (no random effects)
+
+
+```{r, eval=FALSE}
+mod16 <- glm(outcome ~ treatment * month, family = binomial(link = "logit"), data = toes)
+```
+
+$$
+prob = \frac{odds}{1 + odds} \\
+prob = \frac{e^\beta}{1 + e^\beta} \\
+prob = \frac{1}{1 + e^{-\beta}}
+$$
+
+Intercept:
+$$
+logit(p) = -0.56 \\
+p = logit^{-1}(-0.56) = \frac{1}{1 + e^{-0.56}} = 0.36
+
+$$
+Probability of detachment at 3 months for control group:
+$$
+logit(p_{3mc}) = -0.56 + 3(-0.17) \\
+p_{3mc} = 0.255
+$$
+
+Probability of detachment at 3 months for treatment group:
+$$
+logit(p_{3mt}) = -0.56 + 3(-0.17) + 3(-0.07) \\
+p_{3mt} = 0.218
+$$
+
+**Two general strategies**
+
+1. population focus (adjust SEs with clustered SEs): marginal models
+2. individual focus (for a specific person, what's the advantage of treatment): MLM  
+
+
+### Latent growth models
+
+$i$ is time, $j$ is individual.
+
+Random intercept model (two level form):
+$$
+Y_{ij} \sim Binomial(1, \pi_{ij}) \\
+logit(\pi_{ij}) = \beta_{0j} + \beta_{1j}Time_{ij} \\
+\beta_{0j} + \gamma_{00} + \gamma_{01}Z_{j} + u_j \\
+\beta_{1j} + \gamma_{10} + \gamma_{11}Z_{j}
+$$
+Reduced form:
+$$
+Y_{ij} \sim Binomial(1, \pi_{ij}) = Bern(\pi_{ij}) \\
+logit(\pi_{ij}) = \gamma_{00} + \gamma_{01}Z_{j} + \gamma_{1j}Time_{ij} + \gamma_{1j}Z_jTime_{ij} + u_j \\
+u_j \sim N(0, \tau_{00})
+$$
+
+```{r, eval=FALSE}
+mod17 <- glmer(outcome ~ treatment * month + (1 | patient), family = binomial(link = "logit"), data = toes)
+```
+
+
+**With logistic models, random effects make fixed effects *conditional* effects:** The individual effect is much more extreme. At the population level, the individual level variation reduces the treatment effect.
+
+
+## Lecture 5.4
+
+**Multilevel Generalized Linear Models**
+
+Reading: Gelman & Hill section 15.1
+
+**Multilevel Poisson --- stop and frisk data**
+
+The poisson fixed effects made our comparisons *within precinct comparisons* (i.e., we asked, in a given place, was there imbalance?). But, we can make precinct a random effect --- why? 1) to estimate how much precincts vary, and 2) obtain better estimates of individual precincts via partial pooling (discern which precincts are more or less "active").
+
+Multilevel model:
+```{r, eval=FALSE}
+mod18 <- glmer(stops ~ 1 + ethnicity + (1 | precinct), 
+               offset = log(past.arrests), 
+               family = poisson(link = "log"), 
+               data = stops)
+```
+
+### Over-dispersion in single-level count data
+
+1. quasipoisson
+2. negative binomial
+3. add a random effect for each observation (like adding a residual back in). This allows some cases to have more events than expected and some less, given exposure and observed covariates. This works because we can think of the individual cases as, in some sense, multiple observations (the individual counted events).
+
+$$
+y_i = Poisson(u_ie^{X_i\beta}) \\
+y_i = Poisson(u_ie^{X_i\beta + \epsilon}) \\
+\epsilon \sim N(0, \sigma^2)
+$$
+
+Observation level random effects to account for overdispersion - even in a none multilevel context. This is an alternative to a single level quasipoisson:
+```{r, eval=FALSE}
+mod19 <- glmer(stops ~ 1 + ethnicity + precinct + (1 | id), 
+               offset = log(past.arrests), 
+               family = poisson(link = "log"), 
+               data = stops)
+```
+
+
+### Over-dispersion in multi-level count data
+
+Full multilevel model accounting for overdispersion. The uncertainty estimates (standard errors) will increase in size:
+```{r, eval=FALSE}
+mod20 <- glmer(stops ~ 1 + ethnicity + (1 | precinct) + (1 | id), 
+               offset = log(past.arrests), 
+               family = poisson(link = "log"), 
+               data = stops)
+```
+
+
+### Subgroup analysis
+
+Two options:
+
+1. Divide data up into groups (results in completely unpooled estimates for each subgroup)
+2. Full modeling (include interactions for the subgroups)
+
+
+### Model sensitivity checks
+
+1. Did our results depend of how we divided precincts?
+2. How much would things change if we tweaked our analysis?
+
+We don't want to think that our findings are the result of our estimation strategy, but rather reflect the underlying data.
+

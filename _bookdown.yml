@@ -1,8 +1,8 @@
-book_filename: 'Data_Science_Workshops'
+book_filename: 'Linear_mixed_models'
 
 output_dir: docs
 
-repo: https://github.com/stevenworthington/dss-workshops-stata
+repo: https://github.com/stevenworthington/dss-linear-mixed-models
 
 rmd_files:
   - "index.Rmd"

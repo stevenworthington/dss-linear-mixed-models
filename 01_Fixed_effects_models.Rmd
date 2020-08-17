@@ -1,0 +1,101 @@
+
+```{r, echo=FALSE, results="hide"}
+hsb <- read.csv("dataSets/hsb.csv")
+hsb <- within(hsb, {
+  sector <- factor(schtype, levels = 0:1, labels = c("public", "catholic"))
+  id <- factor(schid)
+  math <- mathach
+})
+
+library(lme4)
+```
+
+# Fixed effects models
+
+## Lecture 1.2
+
+$$
+MA_i = \beta_0 + \beta_1*SES + \beta_2*I(id=2)... \beta_k*I(id=k)
+$$
+
+School level fixed effects --- allow each school to differ. They will raise or lower the slope of SES depending on the school. The indicators adjust for school-level differences --- called **fixed effects**.
+**This "completely pools" the SES relationship --- it's the same for each school. THIS IS INCORRECT**
+
+Drop the intercept when using fixed effects? But this would force SES through the origin, no?
+
+Have NOT pooled the intercept, but HAVE completely pooled the slope.
+
+Models impose structure - if the structure is not true, our model estimates can be wrong.
+
+```{r}
+fit1 <- lm(math ~ ses * id - 1 - ses, data = hsb) 
+# gives you k slopes and intercepts, where k is the number of schools.
+```
+
+Point estimates the same as fitting each school separately. But, when fitted together, you get one estimate for the residual variance, but when fitted separately, you get different residual variances for each school.
+
+Sorting out the measurement error versus the structure - are the slopes really different or do they just look different?
+
+Inference - separating what is real from what is random.
+
+
+dplyr Data pipeline - data gets handed to the next thing in line, then the output of that gets handed to the next thing in line.
+
+Overdispersion: Dots stacked up. Jitter the dots. Each dot is average of some school. More variance you have across the dots, the more overdispersion you have.
+
+How much modeling flexibility is the right amount? Need a model flexible enough to capture the main structure of the data, but not so flexible that they're hard to estimate.
+
+
+## Lecture 2.1
+
+Aggregation is unsatisfying: 1) underpowered, 2) biased, 3) heteroscedastic.
+
+Multilevel models are really lots of models tied together.
+
+*classic estimate of average for each county*
+
+Single county $j$
+
+$n_j$ houses
+
+$Y_{ij}, Y_ni$ -> $stdev(Y_i... Y_nj) = S_j$
+
+-> $\hat{Y}_j$
+
+-> $\hat{SE} = \frac{S_j}{sqrt(n_j)}$
+
+
+### Fixed effects regression
+
+Take average value of radon for each county then add value for each house - this is fixed effects regression.
+
+$$
+house_i = \alpha_j[i] + \epsilon_i
+$$
+
+Fixed effects assumes homoscedasticity of the error around the counties - county level variances are the same - with this assumption, we can estimate just one error term for the model. Unlike when you model counties in separate regression models - where you have a separate error term for each model and therefore allow the variance within eaxch county to be different (like gls).
+
+Shrink estimates towards a common mean. House $i$ in county $j[i]$.
+
+$$
+y_i = \alpha_j[i] + \epsilon_i \\
+\epsilon_i ~ N(0, \sigma^2_\alpha) \\
+\alpha_j ~ N(\mu, \sigma^2_\alpha) %% "soft constraint": this ties the intercepts together
+$$  
+
+
+$\alpha_j$ are the county means. $\mu$ is the grand mean of the county means (NOT the same as the mean of all the houses). $\sigma^2_\alpha$ is the variance of the county means.
+
+Shrinkage - a weighted average of the mean for the county and the grand mean of the counties.
+Shrinkage = empirical Bayes estimate. Tend to be underdispersed, compared to the overdispered fixed effects estimates.
+
+Bias-variance trade off - can introduce some bias into the estimates in return for removing a lot of variance. This will result in better estimates overall.
+
+### Level 1 predictors
+
+Basement floor indicator.
+
+```{r, eval = FALSE}
+coef(model)$county # get the empirical Bayes estimates for each county
+```
+

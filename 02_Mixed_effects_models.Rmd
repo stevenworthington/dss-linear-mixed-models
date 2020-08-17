@@ -1,0 +1,272 @@
+
+```{r, echo=FALSE, results="hide"}
+hsb <- read.csv("dataSets/hsb.csv")
+hsb <- within(hsb, {
+  sector <- factor(schtype, levels = 0:1, labels = c("public", "catholic"))
+  id <- factor(schid)
+  math <- mathach
+})
+
+library(lme4)
+```
+
+# Mixed effects models
+
+## Lecture 2.3
+
+1. gender gap and math achievement
+
+Two level notation
+$$
+math_{ij} = \beta_{0j} + \beta_1*female_{ij} + \epsilon_{ij} \\  
+\beta_{0j} = \mu + U_{0j}                                         
+$$
+where $\epsilon \sim N(0, \sigma^2)$ and $U_{0j} \sim N(0, \sigma^2)$
+
+Single level notation
+$$
+math_{ij} = \mu + \beta1*female_{ij} + U_{0j} + \epsilon_{ij}   
+$$
+where $U_{0j}$ is the random intercept. 
+
+
+```{r}
+mod1 <- lmer(math ~ 1 + female + (1 | id), data = hsb)
+summary(mod1)
+# Intercept is \mu, \beta_1 is female, 1 in parentheses is the random intercept (U_{0j})
+```
+
+Extend to Catholic schools (sector variable):
+
+Two level notation
+$$
+math_{ij} = \beta_{0j} + \beta_1*female_{ij} + \epsilon_{ij} \\     %% level 1, where \epsilon \sim N(0, \sigma^2)
+\beta_{0j} =  \mu + U_{0j} + \gamma_{01}*sector_j  \\               %% level 2, where U_{0j} \sim N(0, \sigma^2)
+\beta_{1j} = \gamma_{10} + \gamma_{11}*sector_j                     %% level 2, add sector at level 2
+$$
+
+First subscript tells us which beta, Second subscript tells us which which piece inside the equation - so sequentially from 0 to n for each term.
+
+Single level notation
+$$
+math_{ij} = \beta_{0j} + \beta_1*female_{ij} + \epsilon_{ij} \\    %% level 1
+  = (\gamma_{00} + \gamma_{01}*sector_j + U_{0j}) + (\gamma_{10} + \gamma_{11}*sector_j) + female_j + \epsilon_{ij} \\
+  = \gamma_{00} + \gamma_{01}*sector_j + U_{0j} + \gamma_{10}*female + \gamma_{11}*sectorFemale_j + \epsilon_{ij}  
+$$
+
+The coefficient for the interaction is $\gamma_{11}$.
+
+```{r}
+mod2 <- lmer(math ~ 1 + sector + female + sector : female + (1 | id ), data = hsb)
+summary(mod2)
+# Intercept is \mu, \beta_1 is female, 1 in parentheses is the random intercept (U_{0j})
+```
+
+Covary - having an unusual intercept can be predictive of having an unsual slope - knowing one tells you about the other.
+Intercepts and slopes can covary - pulled from a multivariate normal distribution. Intercept and slope are tied together.
+
+Covariance = correlation on scale of original variables
+Correlation = unitless
+
+```{r}
+mod3 <- lmer(math ~ 1 + ses + (1 + ses | id ), data = hsb)
+summary(mod3)
+# random intercept and slope for ses
+# to get covariance, you can multiply the correlation between intercept and slope with the intercept variance and then the slope variance
+```
+
+Empirical Bayes estimates over-shrink. They provide too much pooling. Can simulate from the model to mitigate this. So, generate random schools from the model to simulate more accurately the variation.
+
+
+## Lecture 2.4
+
+### Modeling assumptions
+
+Assumptions are less important for describing trends in data, rather than estimating causal effects.
+
+1. Level 1 exogeneity: $r_{ij} \overset{i.i.d.}{\sim} N(0, \sigma^2)$ <-- classic OLS assumptions -->
+2. Level 2 exogeneity: $Cov(X_{qij}, r_{ij} = 0$
+3. Level 1 homoskedasticity: $u_j = (u_{0j}, ..., u_{Qj})' \overset{i.i.d}{\sim} N()$
+4. Level 2 homoskedasticity:
+5. Uncorrelation of residuals: $Cov(r_{ij}, u_{qj}) = 0$ <-- cross level assumptions -->
+6. Uncorrelation of random effects: $Cov(X_{qij}, $
+7. Uncorrelation of residuals with random effects:
+8. Normal distribution of random effects (less important):
+
+
+```{r}
+mod4 <- lmer(math ~ 1 + female + sector + ses + sector : ses + meanses + (1 + ses | id), data = hsb)
+summary(mod4)
+```
+
+**Understanding assumptions by breaking them:** 
+
+1. Level 1 heteroskedasticity - if high SES students have more variable math achievement than low SES students. 
+2. Level 2 heteroskedasticity - if catholic schools are more variable (in their random offsets) than public schools.
+3. Level 1 exogeneity: if the association between SES and math acheivement is not linear.
+4. Level 2 exogeneity: this one is fine, as long as we have categorical level-2 predictors. (with categorical predictirs, we are always ``linear''). For continuous level-2 predictors, we would need a linear relationship again.
+
+
+Assumptions 2, 4, and 6 can cause bias (i.e., relationship between variables in the ``structural'' part of the model and the error terms. While assumptions 1, 3 and 5 can mess up variance components (ie., consistency of the standard errors, accuracy of the variance estimates, accuracy of confidence intervals and hypothesis tests).
+
+### Centering your covariates
+
+**Intercepts**
+
+$$
+income_i = \beta_0 + \beta_1SAT_i + \epsilon_i \\
+\hat{\beta_0} = 1000 \\
+\hat{\beta_1} = 3
+$$
+
+When intercepts are far away, we get a slight change in slope associated with a large change in intercept. They are quite correlated. With centering, changing the slope doesn't really change the intercept. The intercept is more the overall mean, and therefore useful. Decoupling slope and intercept stops each one from messing with the other and aids in estimation - can end up with high or low random effects correlations if not centered. **If you see that the random intercept and slope are correlated after mean centering, then this means the correlation is something structural about the data, not something mechanical about estimation**.
+
+**Group mean centering:** intercepts are now means of the whole group (i.e., school). Individual level covariate now measures departure from the group the individual is in. $y_{ij} = \alpha_j + \beta_j(X_{ij} - \bar{X}_j) + \epsilon_{ij}$ where $\bar{X}_j = 500$
+
+**Grand mean centering:** intercepts are now adjusted means. $y_{ij} = \alpha_j + \beta_j(X_{ij} - \bar{X}) + \epsilon_{ij}$ where $\bar{X} = 500$.
+
+**Within versus between centering:**
+
+
+## Lecture 2.5
+
+### Part I: within versus between centering
+
+Dataset - birthweight and smoking (Swedish dataset). Level 1 - babies. Level 2 - mother. Can do between mother comparisons and within mother comparisons. Think about regression as a form of matching. Between mother confounders will be time invariant, while within mother confounders will be time variant. Why did the mother smoke for one pregnancy but not the other? Do we have a variable that identifies the reason? Like was she large and sedantary, then became a marathon runner. Cannot do age to age within comparisons - same mother giving birth at age 20 cannot be compaared to her later self giving birth at age 40 - this would need to be between mother. Though you could use age-adjusted birthweights for within comparisons.
+
+Estimating between: aggregate data to group level, then regress average birthweight onto the averages of the predictors. A kind of dose-response model. Averaging works for linear models.
+
+Estimating within: take out between variation and then regress - this is fixed effects regression. Alternative - within-group recentering (subtract mother-level means from outcomes?? and all covariates - see RH&S pg 145).
+
+Estimating both with a MLM: We can allow for different within and between effects. So for birth $i$ of mother $j$:
+
+$$
+y_{ij} = \beta_1 + B^W(S_{ij} - \bar{S}_{.j}) + \beta^B\bar{S}_{.j} + \xi_j + \epsilon_{ij}
+$$
+with $S_{ij}$ smoking status and $\bar{S}_j$ average smoking status for mother $j$. Here the notation is that $\gamma_0$ is $\beta_1$ (the fixed effects intercept) and $u_j$ is $\xi_j$ (the random effect residual - random deviations for the $j$ groups from the fixed effects intecept). $\beta_1 = 3238gms$, $\beta^W = -105$, $\beta^B = 183$.
+
+```{r, eval = FALSE}
+dat <- dat %>% group_by(mid) %>%
+  mutate(smokem = mean(smoke),
+         smokec = smoke - smokem)
+
+mod5 <- lmer(birthweight ~ 1 + smokec + smokem + (1 | mid), data = dat)
+```
+Deviations from cluster means are automatically uncorrlelated with the group means - solution to one of the model assuptions (this is the hybrid model).
+
+Now the same model with the HSB data:
+$$
+y_{ij} = \beta_{0j} + \beta_wSES_{ij} + \beta_b\bar{SES}_j + \epsilon_{ij} \\
+\beta_{ij} = \gamma_0 + u_{0j}
+$$
+Within coef estimates slope inside the school. Between coef estimates how the averages of the school relate to the outcome. **Contextual effect:** The expected difference in outcomes from being in school 2 versus school 1 (but with the same SES) - in R&B pg 140. The between effect is basically the contextual effect plus the within effect. If you group mean center the within variable, then the between variable becomes and estimate of the contextual effect - is this right?
+
+
+### Part II: Concept of maximum likelihood
+
+1. The **model**: a description or recipe of how the data might have come to be (a data generating process). The model tells us what predictions are possible.
+2. The **parameters**: numbers that makes this general recipe more specific.
+
+What parameters of this model make your data more **likely**?
+
+
+
+## Lecture 2.6 
+
+**Inference for MLMs**
+
+We get 3 things from MLMs:
+
+1. fixed effects
+2. variance and covariance parameters ($\tau$) - variances and covariances of the hyperparameters
+3. With empirical Bayes as a *second step*, estimated random effects for each group (not the variances, but the actual estimates for each group). Inference for these estimates is very shaky - generally don't do it.
+
+Second level predictors modify intercepts or slopes. If they modify slopes, then that is an interaction with the first level predictor associated with that slope - it moderates the slope of the first level predictor.
+
+See Chapter 4 in BR book.
+
+### confidence intervals
+
+**normal approximation**: 
+
+$$
+\sqrt{n} \left( \hat{\beta} - \beta \right) \rightarrow N(0, \tau^2) \\
+SE = \frac{\tau}{\sqrt{n}}
+$$
+As sample size grows, the estimated parameters will be normally distributed about the true parameters, and the variance will shrink with the sample size towards an estimable value.
+
+If the sampling distribution is relatively symmetric and bell-shaped, a 95% confidence interval can be estimated using:
+
+$$
+statistic \pm 2 \times \widehat{SE}
+$$
+
+Confidence intervals don't tell you whether you're right or wrong for a given project, but rather how often you'll be right over time.
+
+Normal approximation assumes that we know $\tau$, but we don't, we estimate it.
+
+**variance covariance estimates**:
+
+Uncertainty estimnates are hard to get and are generally unreliable. But, we can test whether the estimates are different from zero. There are no standard errors for variance parameters - because standard errors only really make sense if the distribution is the estimator is more or less symmetric. But, for variance parameters, the distribution is skewed (bounded at zero). This boundary distorts normality.
+
+**profile likelihood confidence intervals**:
+
+Basically asks, "what is likely if we let other parameters fit as best they can?". Lays down a number line and sets grid points, then iterates over the grid and determines which values on the grid are believable.
+
+
+### Inference
+
+Compare your data to what you would have gotten were your hull hypothesis true (i.e., compare what we have to what we should have had).
+
+* Likelihood ratio tests
+  + best
+* Wald tests
+  + good, but not good for variance parameters with skewed distributions
+* ANOVA / F tests
+* score tests 
+
+**P-values**: Gelman "There are no zeros in social science". 
+
+**Wald test (t-test)**:
+
+$$
+t = \frac{\hat{\beta} - \beta_{hyp}}{\widehat{se}(\hat{\beta})}
+$$
+The chance of reaching your "extreme value" $t$ by chance if the null hypothesis is correct.
+
+A problem with t-tests - degrees of freedom. 
+
+$$
+H_0 : \gamma_{10} = 0
+$$
+where:
+
+$$
+\beta_{1j} = \gamma_{10} + u_{1j}
+$$
+The above null should be extended to include a test of whether the random effects variance for $u_{1j}$ is also zero - in other words, no variance around the fixed effect of zero.
+
+By hand:
+
+```{r, eval=FALSE}
+2 * pnorm(t, lower.tail = FALSE)
+```
+
+The number of degrees of freedom tells you which parameters were harder or easier to estimate given the clustered nature of the data. Group mean centering can increase degrees of freedom.
+
+
+**Likelihood ratio test**:
+
+if the likelihoods are basically the same, we accept the null. If the *constrained* model fits like crap, then we reject the null. To test, we compare the ratio of likelihoods.
+
+Basic idea: if $\gamma_{00}$ is actually 0, then omitting it from the model shouldn't make much difference.
+
+$$
+D = -2log \frac{L(\textrm{simple model})}{L(\textrm{complex model})}
+$$
+The likelihood ratio statistic has a $\chi^2$ distribution:
+
+$$
+D \sim \chi^2
+$$
+

@@ -1,0 +1,237 @@
+
+```{r, echo=FALSE, results="hide"}
+hsb <- read.csv("dataSets/hsb.csv")
+hsb <- within(hsb, {
+  sector <- factor(schtype, levels = 0:1, labels = c("public", "catholic"))
+  id <- factor(schid)
+  math <- mathach
+})
+
+library(lme4)
+```
+
+# Many level models
+
+## Lecture 4.1
+
+**Many level models (>3 levels)**
+
+Case study: student growth for student nested in schools --- READS data. Student level predictors, but students are within schools.
+
+**Research questions:**
+
+1. Do students at different schools grow at different rates, on average?
+2. Do students identified at English learners language learners grow at different rates than other students, and does that vary by school? (this requires a student-level predictor)
+3. Do students at high poverty schools have systematically different rates of growth than students at low poverty schools (this requires a school-level predictor).
+
+Three-level model:
+$$
+read_{ijt} = \pi_{0ij} + \pi_{1ij}time_{ijt} + \color{darkgreen}{\epsilon_{ijt}} \\
+\color{darkgreen}{\epsilon_{ijt}} \sim N(0, \sigma^2) \\
+\pi_{0ij} = \beta_{00j} + \color{darkgreen}{u_{0ij}} \\
+\pi_{1ij} = \beta_{10j} + \color{darkgreen}{u_{1ij}} \\
+\beta_{00j} = \color{darkred}{\gamma_{000}} + \color{darkgreen}{r_{00j}} \\
+\beta_{10j} = \color{darkred}{\gamma_{100}} + \color{darkgreen}{r_{10j}} \\
+(u_{0ij}, u_{1ij}) \sim N(\bf{0}, \Sigma) \\
+(r_{00j}, r_{10j}) \sim N(\bf{0}, \tau)
+$$
+Outcome deoends on level 1 things, then how level 2 things depend on level 1 things, then how level 3 things depend on level 2 things. (last two lines of equation above are not correct)
+
+$\beta$ is about specific schools (level 2), while $\gamma$ is across the whole population (level 3).
+
+R syntax:
+```{r, eval=FALSE}
+mod11 <- lmer(read ~ 1 + time + (1 + time | id) + (1 + time | schid), data = dat)
+## same as
+mod11 <- lmer(read ~ 1 + time + (1 + time | id/schid), data = dat)
+## same as
+mod11 <- lmer(read ~ 1 + time + (1 + time | id:schid) + (1 + time | schid), data = dat)
+```
+
+Reduced form (substitute the $\pi$'s):
+$$
+Y_{ijt} = \pi_{0ij} + \pi_{1ij}time_{ijt} + \epsilon_{ijt}  \\ 
+= (\beta_{00j} + u_{0ij}) + (\beta_{10j} + u_{1ij})time_{ijt} + \epsilon_{ijt} \\
+= \beta_{00j} + \beta_{10j}time_{ijt} + u_{0ij} + u_{1ij} \epsilon_{ijt} \\
+= (\gamma_{000} + r_{00j}) + (\gamma_{100} + r_{10j}) + u_{0ij} + u_{1ij} time_{ijt} + \epsilon_{ijt} \\
+= \color{darkred}{\gamma_{000} + \gamma_{100}time_{ijt}} + \color{darkgreen}{r_{00j} + r_{10j}time_{ijt} + u_{0ij} + u_{1ij}time_{ijt} + \epsilon_{ijt}} 
+$$
+Offset due to schools are the $r$'s. Offset due to students are the $u$'s. The $\epsilon_{ijt}$ is the same sort of error as in single-level OLS (i.e., measurement error). The random effect 'stack' on top of each other. Fixed effect population averages are in $\color{darkred}{darkred}$, while residuals are in $\color{darkgreen}{darkgreen}$. You could have the higher level (level 3 here) be fixed effects only --- so if you only had 5 schools, this could be a 2-level mixed model for students over time with fixed effects for school.
+
+
+### Level 2 covariates
+
+Including student ELL status (time-invariant) in the two-level form: 
+$$
+read_{ijt} = \pi_{0ij} + \pi_{1ij}time_{ijt} + \color{darkgreen}{\epsilon_{ijt}} \\
+\color{darkgreen}{\epsilon_{ijt}} \sim N(0, \sigma^2) \\
+\pi_{0ij} = \beta_{00j} + \beta_{01j}ELL_{ij} + \color{darkgreen}{u_{0ij}} \\
+\pi_{1ij} = \beta_{10j} + \beta_{11j}ELL_{ij} + \color{darkgreen}{u_{1ij}} \\
+\color{grey}{\textrm{average school reading score:}} \quad \beta_{00j} = \color{darkred}{\gamma_{000}} + \color{darkgreen}{r_{00j}} \\ 
+\color{grey}{\textrm{school-specific ELL initial gap:}} \quad \beta_{01j} = \color{darkred}{\gamma_{010}} + \color{darkgreen}{r_{01j}} \\ 
+\color{grey}{\textrm{school avarge growth rate:}} \quad \beta_{10j} = \color{darkred}{\gamma_{100}} + \color{darkgreen}{r_{10j}} \\ 
+\color{grey}{\textrm{school specific ELL/non-ELL growth rate:}} \quad \beta_{11j} = \color{darkred}{\gamma_{110}} + \color{darkgreen}{r_{11j}} \\ 
+$$
+We have four 3rd-level equations. We now have a $4 \times 4$ matrix for the random effects.
+
+Reduced form:
+$$
+read_{ijt}= \color{darkred}{\gamma_{000} + \gamma_{010}ELL_{ij} + \gamma_{100}time_{ijt} + \gamma_{110}ELL_{ij}time_{ijt}} + \color{darkgreen}{r_{00j} + r_{01j}ELL_{ij} + r_{10j}time_{ijt} + r_{11j}time_{ijt}ELL_{ij} + u_{0ij} + u_{1ij}time_{ijt} + \epsilon_{ijt}} 
+$$
+
+R model syntax:
+```{r, eval=FALSE}
+mod11 <- lmer(read ~ 1 + time * ell + (1 + time | id) + (1 + time * ell | schid), data = dat)
+```
+
+### Level 3 covariates
+
+**How does poverty interact with growth (school level)**
+
+Including school poverty variable in the two-level form: 
+
+SEE PHOTO!!!! the below equation is not correct, just the same as above.
+$$
+read_{ijt} = \pi_{0ij} + \pi_{1ij}time_{ijt} + \color{darkgreen}{\epsilon_{ijt}} \\
+\color{darkgreen}{\epsilon_{ijt}} \sim N(0, \sigma^2) \\
+\pi_{0ij} = \beta_{00j} + \beta_{01j}ELL_{ij} + \color{darkgreen}{u_{0ij}} \\
+\pi_{1ij} = \beta_{10j} + \beta_{11j}ELL_{ij} + \color{darkgreen}{u_{1ij}} \\
+\color{grey}{\textrm{average school reading score:}} \quad \beta_{00j} = \color{darkred}{\gamma_{000}} + \color{darkgreen}{r_{00j}} \\ 
+\color{grey}{\textrm{school-specific ELL initial gap:}} \quad \beta_{01j} = \color{darkred}{\gamma_{010}} + \color{darkgreen}{r_{01j}} \\ 
+\color{grey}{\textrm{school avarge growth rate:}} \quad \beta_{10j} = \color{darkred}{\gamma_{100}} + \color{darkgreen}{r_{10j}} \\ 
+\color{grey}{\textrm{school specific ELL/non-ELL growth rate:}} \quad \beta_{11j} = \color{darkred}{\gamma_{110}} + \color{darkgreen}{r_{11j}} \\ 
+$$
+
+R model syntax (with 3-way interaction):
+```{r, eval=FALSE}
+mod12 <- lmer(read ~ 1 + time * ell * poverty_school + (1 + time | id) + (1 + time * ell | schid), data = dat)
+```
+
+Split initial ability (intercepts) and growth rate (time) equations:
+
+$$
+read_{ijt} = (\gamma_{000} + \gamma_{010}ELL_{ij} + \gamma_{001}Poverty_{j} + \gamma_{011}ELL_{ij}Poverty_{j}) + \\
+            (\gamma_{100} + \gamma_{110}ELL_{ij} + \gamma_{101}Poverty + \gamma_{111}ELL_{ij}Poverty_{j}) * time_{ijt}
+$$
+
+
+## Lecture 4.2 (A)
+
+**Crossed Random Effects Models**
+
+Cross-classified models arise when we have multiple nesting structures (e.g., when each observation can be classified into multiple different level-2 units). For example, students are nested in both schools and neighborhoods.
+
+
+## Lecture 4.2 (B)
+
+**AIC and Model Selection / Building (model search)**
+
+Picking from a bunch of different models that are **not** nested. R&B ch 9, 252-276.
+
+Options for model selection (statistical tools):
+
+1. Likelihood Ratio Tests
+    + Cannot do likelihood ratio testing on **non-nested** models. 
+    + need to fit the models to exactly the same data
+2. Model inspection / evaluation
+3. AIC / BIC / etc.
+    + penalizes more complicated models
+    + can compare **non-nested** models
+    + can compare whole families of models
+    + need to fit the models to exactly the same data
+
+Complexity versus model fit: more parameters means more flexible, but the model is more complicated.
+
+AIC: a measure of the relative quality of statistical models:
+$$
+AIC = -2(LL) + 2k
+$$
+Where $k$ is the number of parameters and $LL$ is the log-likelihood.
+
+BIC & DIC: measures of the relative quality of statistical models:
+$$
+BIC = -2(LL) + log(n)k  \\
+DIC = -2(LL) + k_D
+$$
+
+Sample size for BIC? Should it be number of units at level 1 --- super conservative (does not take into account the nested structure of data)? Or number of level 2 units --- less conservative?
+
+Information criteria should get the gross ordering of good vs. bad models right. Then use LRTs for specific terms between the good models. Always plot the data.
+
+
+## Lecture 4.3
+
+**Randomized Experiments**
+
+1. Custer randomized experiments (each school gets treated or not).
+2. Multisite randomized experiments (a bunch of schools, where a fraction of the students in each get treated). Each school is a mini-experiment, and you can see how these experiments differ across schools.
+
+**Randomized experiments:** The experimenter obtains a collection of units, then randomized units into treatment and control. This makes, for *typical* randomizations, the treatment group and the control group more or less the same. Now, if we see any differences in outcome, we can ascribe this to the treatment itself.
+
+### Potential outcomes
+
+**The Neyman-Rubin potential outcomes framework:** 
+
+Assume treatment assignment for any unit has no impact on any other unit (SUTVA). Each unit has two outcomes;
+
+*  $y(1)$: what happens when you treat it
+*  $y(0)$: what happens when you do not
+
+The treatment effect for unit $i$ is then $\tau = y(1) - y(0)$. We observe either $y(1)$ or $y(0)$ depending on whether we treat unit $i$ or not.
+
+The potential outcomes are fixed. The randomness comes from how treatment is assigned. How treatment is assigned is called the **assignment mechanism**. In a potential outcomes framework, randomness is due to **assignment**, the units can be considered *fixed*. The key idea is that any individual has two outcomes, only one of which we see.
+
+### Cluster Randomized Trials
+
+Must take clustering into account when modeling these designs. What are we estimating?
+
+1. Average treatment effect of sites
+2. Average treatment effect of people
+
+$$
+Y_{ij} = \beta_j + r_{ij} \\
+\beta_j = \gamma_0 + \gamma_1T_j + u_j \\
+u_j \sim N(0, \sigma^2_u)
+$$
+Treatment, $T_j$, is a level-2 variable. We cannot separate variation in treatment impact and variation in clusters. We might reasonably worry about the 2nd-level variance term: we could let it vary by treatment status with an extended model with different variances for the treatment groups.
+
+```{r, eval=FALSE}
+mod14 <- lmer(year ~ 1 + T + (1 | schid), data = dat)
+```
+
+How many units? If the clusters are radically different and the units within a cluster very much the same, then we really have only $j$ units in our experiment. If the clusters are the samne, and individuals within cluster basically independent, then we have closer to $nJ$ units. Moral: cluster-randomization can be a *much smaller experiment than you think*.
+
+Rough estimate of uncertainty:
+$$
+\hat{\gamma_1} = \hat{Y_T} - \hat{Y_C} \\
+Var(\hat{\gamma_1}) = \frac{1}{J} \left( 4\sigma^2_u + \frac{\sigma^2}{n} \right)
+$$
+Cost of data collection:
+
+$$
+Cost = J(C_{1n} + C_2)
+$$
+You can do power and optimal cost/design calculations for specific scenarios but they may not generalize. Could instead *simulate* to model more complex and authentic scenarios.
+
+**ICC strongly affects power:** as ICC gets bigger you need more clusters (more clusters rather than a few big clusters). Can get ICC from pilot studies or previous research to use in power analysis.
+
+### Multisite Experiments
+
+Each site is a mini-experiment, but they are related.
+
+**Research questions:**
+
+1. What is the average impact across sites?
+2. What is the variation in impacts across sites?
+3. What is the impact for a specific site? (Harder - comes from empirical Bayes estimates)
+
+Compared to cluster randomization: here we get treatment info. for each site. Cluster-randomization gives *no* treatment info. for *any* site. This means we have more power, because we can assess the site impact as well as the treatment impact.
+
+Model - two-level notation:
+$$
+Y_{ij} = \beta_{0j} + \beta_{1j}T_{ij} + \color{darkgreen}{r_{ij}} \\
+\color{darkgreen}{r_{ij}} \sim N(0, \sigma^2) \\
+\beta_{0j} = \color{darkred}{\gamma_{00}} + \color{darkgreen}{u_{0j}} \\
+\beta_{1j} = \color{darkred}{\gamma_{10}} + \color{darkgreen}{u_{1j}} \\
+\left( \frac{u_{0j}}{u_{1j}} \right) \sim N \left[\frac{0}{0} ? \right]
+$$

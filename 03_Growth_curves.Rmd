@@ -1,0 +1,287 @@
+
+```{r, echo=FALSE, results="hide"}
+hsb <- read.csv("dataSets/hsb.csv")
+hsb <- within(hsb, {
+  sector <- factor(schtype, levels = 0:1, labels = c("public", "catholic"))
+  id <- factor(schid)
+  math <- mathach
+})
+
+library(lme4)
+```
+
+# Growth curves
+
+**Longitudinal data and growth curves**
+
+## Lecture 3.1
+
+Individuals are **level 2**, time is **level 1**. Observations about individuals that do not change are level 2, while observations about individuals that do change are level 1. Essentially, individuals are sampled, and then time points within individuals are sampled (not they're not really sampled).
+
+1. Clustered data: we observed a bunch of students in a school. The students have **no order**. They are independent within the school.
+
+2. Longitudinal data: we observe a bunch of times. The times are **ordered**. They are not independent within the student. This ordering of observations is meaningful. So, time points closer to each other are more correlated with each other.
+
+Visualizations important with longitudinal data. **Always look at your individuals** by plotting their outcome data over time.
+
+**Marginal model:** summary / average accross all individuals.
+
+Read Willet and Singer book chapters.
+
+**Panel studies:** track everyone at the same sequence of time points. Timepoints are called "waves".
+
+**Cohort studies:** follow a group. But, check-in times can be variable.
+
+**Balance:** For panel data, when there is an observation for each person at each time point.
+
+
+### Growth curves
+
+R&B pg 164
+
+For each child, they have initial knowledge $\pi_{0i}$ and rate of increase $\pi_{1i}$. Make the intercept meaningful - at onset of preschool or something. 
+
+R&B pg 163-164
+Classic random slope model:
+
+$$
+Y_{ti} = \pi_{0i} + \pi_{1i}\alpha_{ti} + \epsilon_{ti} \\
+\epsilon_{ti} \sim N(0, \sigma^2) \\
+\pi_{0i} = \beta_{00} + r_{0i} \\
+\pi_{1i} = \beta_{10} + r_{1i} \\
+(r_{0i}, r_{1i}) \sim N(\bf{0}, \Sigma)
+$$
+Fixed effects: $\beta_{00}$, $\beta_{10}$
+
+Variance components: $\sigma^2$, $\tau_{00}$, $\tau_{11}$, $\tau_{10}$
+
+Betas are now parameters at **level 2** because we added in another level below individuals.
+
+
+## Lecture 3.2 
+
+**Quadratic Growth Models (Part I)**
+
+**Questions to ask**:
+1. **Is there variation?** --- are these children different from each other?
+2. **What explains this variation?** --- what variables explain why children are different from one another?
+
+**3 random effects per student:**
+1. Random intercept ($\pi_{0i}$)
+2. Random slope ($\pi_{1i}$)
+3. Random acceleration /curvature (growth) ($\pi_{2i}$)
+
+Data is structured like this:
+
+|   ID   |       $\alpha$       |   $\gamma$  |   Home Language   |   HRS   |
+|:-------|:--------------------:|:-----------:|:------------------|:--------|
+| 101    | $\alpha_{1, 101}$ 0  | -0.5        |  0                | 80      |
+| 101    | $\alpha_{2, 101}$ 4  |  0.2        |  0                | 80      |
+| 101    | $\alpha_{3, 101}$ 5  |  0.4        |  0                | 80      |
+| 101    | $\alpha_{4, 101}$ 8  |  0.7        |  0                | 80      |
+| 208    | $\alpha_{1, 208}$    | -0.8        |  1                | 80      |
+
+First column after ID is time.
+
+Two level notation: (here, $a$ is age - a level one predictor)
+$$
+Y_{ti} = \pi_{0i} + \pi_{1i}a_{ti} + \epsilon_{ti} \\
+\epsilon_{ti} \sim N(0, \sigma^2) \\
+\pi_{0i} = \beta_{00} + \beta_{01}X_i + r_{0i} \\
+\pi_{1i} = \beta_{10} + \beta_{11}X_i + r_{1i} \\
+(r_{0i}, r_{1i}) \sim N(\bf{0}, \Sigma)
+$$
+
+Single level notation:
+$$
+Y_{ti} = \pi_{0i} + \pi_{1i}a_{ti} + \epsilon_{ti} \\
+= (\beta_{00} + \beta_{01}X_i + r_{0i}) + (\beta_{10} + \beta_{11}X_i + r_{1i}) + a_{ti} + \epsilon_{ti} \\
+= \beta_{00} + \beta_{01}X_i + r_{0i} + \beta_{10}a_{ti} + \beta_{11}X_i\alpha_{ti} + r_{1i}a_{ti} + \epsilon_{ti} \\
+= \beta_{00} + \beta_{01}X_i + \beta_{10}a_{ti} + \beta_{11}X_ia_{ti} + (r_{0i} + r_{1i}a_{ti} + \epsilon_{ti})
+$$
+The random effects in the parentheses on the final line can be thought of as residuals.
+
+Prediction:
+$$
+X_i = 2, a_{ti} = 5 \\
+\beta_{00} + \beta_{01}2 + \beta_{10}5 + \beta_{11}2.5
+$$
+
+```{r, eval = FALSE}
+mod7 <- lmer(Y ~ 1 + age * (language + hours) + (1 + age | StudentID), data = dat)
+```
+
+When using growth models, we may not care about level 1. Level 2 is where we get at the question of growth. Here, $t$ is the observation number.
+
+$$
+Y_{ti} = \pi_{0i} + \pi_{1i}a_{ti} + \epsilon_{ti} \\
+\epsilon_{ti} \sim N(0, \sigma^2) \\
+\pi_{0i} = \beta_{00} + \beta_{01}LANG_i + \beta_{02}HRS_i + r_{0i} \\
+\pi_{1i} = \beta_{10} + \beta_{11}LANG_i + \beta_{12}HRS_i + r_{1i} \\
+(r_{0i}, r_{1i}) \sim N(\bf{0}, \Sigma)
+$$
+
+When looking at growth rates over time, a small growth rate difference can mean a lot, since the difference in growth rate gets compounded over time. It's best to get some predictions for each kid over the full length of time, then compare.
+
+
+### Quadratic growth (R&B chapter 6)
+
+**Research question**: Describe the association between maternal speech and child's vocabulary.
+
+Very important to pick where the intercept is for growth models --- need to mean center. L is an important centering decision - in this case, L = 12 months (that's the intercept). But, may be better to put L within the bounds of the observed data.
+
+1. $\pi_{0i}$ = status at L
+2. $\pi_{1i}$ = instantaneous (average) growth at L
+3. $\pi_{2i}$ = curvature / acceleration
+
+Unconditional Quadratic Growth Model:
+$$
+Y_{ti} = \pi_{0i} + \pi_{1i}(a_{ti} - L) + \pi_{2i}(a_{ti} - L)^2 + \epsilon_{ti} \\
+\epsilon_{ti} \sim N(0, \sigma^2) \\
+\pi_{0i} = \gamma_{00} + u_{0i} \\
+\pi_{1i} = \gamma_{01} + u_{1i} \\
+\pi_{2i} = \gamma_{02} + u_{2i} \\
+(u_{0i}, u_{1i}, u_{2i}) \sim N(\bf{0}, \Sigma)
+$$
+Three random effects --- *all correlated*. We have a fixed centering constant $L$ (this is a constant chosen by you, not a parameter).
+
+Anything with an $i$ subscript is for an individual student. Anything without a subscript is a fixed effect --- this is the shared structual component of the model.
+
+Number of parameters we are estimating:
+
+1. 3 fixed effects: $\gamma_{00}, \gamma_{01}, \gamma_{02}$
+2. 6 random effects: the diagonals of the matrix: $\tau_{00}, \tau_{11}, \tau_{22}$. next are the covariances: $\tau_{01}, \tau_{02}, \tau_{12}$
+3. 1 residual term: $\epsilon_{ti}$
+
+
+## Lecture 3.2: 
+
+**Quadratic Growth Models (Part II)**
+
+R&B Chapter 6 pg 169-176
+
+Anatomy of a quadratic curve:
+$$
+y = \pi_{oi} + \pi_{1i}(X - L) + \pi_{2i}(X - L)^2 \\
+L = 19 \\
+X = {18, 19, 20} \\ 
+\pi_{0i} = 1, \pi_{1i} = 2, \pi_{2i} = 0.5
+$$
+Evaluate y at the above Xs and graph it.
+
+Predict vocabulary for an average / typical child (assuming the random effects and residuals are zero) at X = 20 and X = 12:
+$$
+\hat{y} = -45.05 + 12.14(20 - 12) + 1.84(20 - 12)^2 \\
+= 170 \\
+\hat{y} = -45.05 + 12.14(12 - 12) + 1.84(12 - 12)^2 \\
+= -45.05
+$$
+
+If the random effects are not normally distributed (the ones from the `coef()` function in R), then this is evidence of model miss-specification. Probably, there is some omitted variable in the structural part of the model. If the random effects are grouped at the extremes, this may indicate that there's a missing grouping variable in the fixed effects part of the model.
+
+Rate of growth at age $a$ for kid $i$ is the derivitive of our curve at age $a$.
+
+
+### Model Building
+
+**How can we get a nice simple model given our data?** (Cat lego picture)
+
+Model refinements:
+
+1. Drop the intercept --- no overall intercept or random intercept. We force the regression through the origin, which if we've centered the data at $L = 12$ the origin will be 12. So, kids at age 12 will have zero vocabularly. Our residuals only changed a little bit.
+
+2. Set expected rate of growth at age 12 to zero. (i.e., take out the linear fixed effect term, but leave in the linear random effect). Our residuals only changed a little bit.
+
+
+### Adding covariates
+
+Can we explain our acceleration? Is maternal speech predictive of growth?
+
+Dropping main effects --- a design decision:
+
+```{r, eval = FALSE}
+M4A.2 <- lmer(vocab ~ 0 + age12sq:sex + age12sq:logmom + (0 + age12 + age12sq | per), dat = dat.g0)
+```
+
+The above model says that mother's vocabularly will increase the accelation of child's acquisition of vocabularly. But, that the fixed rate of growth (i.e., linear growth) is fixed at zero.
+
+
+## Lecture 3.3
+
+**piecewise linear growth model and model comparison (AIC)**
+
+Reading: Faraway ch 9. Rabe-Hesketh & Skrondal: pp 227-264 logitudinal data structure, pp 278-282 missing data, pp 293-311 marginal models and error structures.
+
+Time varying questions are harder than time invariant questions.
+
+`screenreg()` from `textregp` package (can it output SDs instead of variances?)
+
+Positive covariance term means that higher random slope goes with higher random intercept - so kids that start with higher reading skills also learn at a faster rate. Even if the difference in learning rate is small between the kids, over time this can equate to a large difference in their reading skills.
+
+$$
+covariance(A, B) = correlation \times SD_A \times SD_B \\
+correlation = \frac{covariance}{SD_A \times SD_B}
+$$
+
+```{r, eval=FALSE}
+mod9 <- lmer(reading ~ 1 + time + gender + time : gender + (1 + time | id), data = dat)
+```
+
+### Comparing models
+
+$$
+1 - Var(conditional model) / Var(unconditional model) = proportion of variance explained
+$$
+
+**Parametric growth curves**
+
+The most complex model you can entertain is one where the number of parameters is n-1, where n is the number of observations. So if there are 4 data points for each kid, you can have at most a quadratic model.
+
+Can use a log transform to have a steep start to the growth, then have it level out.
+
+
+**Selecting a growth curve**
+
+1. use theory / research question
+2. use a curve that works well overall
+3. simple is better
+
+
+**Piecewise growth**
+
+Piecewise growth is inherently cumulative.
+
+$$
+reading_{it} = \pi_{0i} + \pi_{1i}TimeA_{it} + \pi_{2i}TimeB_{it} + \epsilon_{it}
+$$
+
+Look at cumulative school time and cumulative summer time (do book keeping based on data collection)
+
+**Option 1:** school time / summer time separately:
+
+$$
+reading_{it} = \pi_{0i} + \pi_{1i}School_{it} + \pi_{2i}Summer_{it} + \epsilon_{it} \\
+\pi_{0i} = \gamma_{00} + u_{0i} \\
+\pi_{1i} = \gamma_{10} + u_{1i} \\
+\pi_{2i} = \gamma_{20} + u_{2i} 
+$$
+
+```{r, eval=FALSE}
+mod10 <- lmer(reading ~ 1 + school + summer + (1 + school + summer | id), data = dat)
+```
+
+**Option 2:** increment / decrement --- like an interaction for the change in slope at a specific time point:
+
+$$
+reading_{it} = \pi_{0i} + \pi_{1i}Time_{it} + \pi_{2i}Summer_{it} + \epsilon_{it} \\
+\pi_{0i} = \gamma_{00} + u_{0i} \\
+\pi_{1i} = \gamma_{10} + u_{1i} \\
+\pi_{2i} = \gamma_{20} + u_{2i} 
+$$
+
+```{r, eval=FALSE}
+mod11 <- lmer(reading ~ 1 + time + summer + (1 + time + summer | id), data = dat)
+```
+
+These two models are the same; they just have different parameterizations.
+
