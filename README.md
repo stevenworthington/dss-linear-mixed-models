@@ -1,4 +1,4 @@
-# Data Science Workshops
+# Linear Mixed Models
 
 Materials for the software workshops held at the [Institute for Quantitative Social Science](http://dss.iq.harvard.edu/) and [Harvard Business School](https://training.rcs.hbs.org) at Harvard.
 
