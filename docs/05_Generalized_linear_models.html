@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Generalized linear models | Linear Mixed Models</title>
+  <meta name="description" content="Generalized linear models | Linear Mixed Models" />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Generalized linear models | Linear Mixed Models" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Generalized linear models | Linear Mixed Models" />
+  <meta name="github-repo" content="stevenworthington/dss-linear-mixed-models" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Generalized linear models | Linear Mixed Models" />
+  
+  <meta name="twitter:description" content="Generalized linear models | Linear Mixed Models" />
+  
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="04_Many_level_models.html"/>
+<link rel="next" href="06_Sandwich_estimator.html"/>
+<script src="libs/header-attrs-2.3/header-attrs.js"></script>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Linear Mixed Models</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Introduction</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#table-of-contents"><i class="fa fa-check"></i>Table of Contents</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#authors-and-sources"><i class="fa fa-check"></i>Authors and Sources</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="01_Fixed_effects_models.html"><a href="01_Fixed_effects_models.html"><i class="fa fa-check"></i>Fixed effects models</a>
+<ul>
+<li class="chapter" data-level="" data-path="01_Fixed_effects_models.html"><a href="01_Fixed_effects_models.html#lecture-1.2"><i class="fa fa-check"></i>Lecture 1.2</a></li>
+<li class="chapter" data-level="" data-path="01_Fixed_effects_models.html"><a href="01_Fixed_effects_models.html#lecture-2.1"><i class="fa fa-check"></i>Lecture 2.1</a>
+<ul>
+<li class="chapter" data-level="" data-path="01_Fixed_effects_models.html"><a href="01_Fixed_effects_models.html#fixed-effects-regression"><i class="fa fa-check"></i>Fixed effects regression</a></li>
+<li class="chapter" data-level="" data-path="01_Fixed_effects_models.html"><a href="01_Fixed_effects_models.html#level-1-predictors"><i class="fa fa-check"></i>Level 1 predictors</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="02_Mixed_effects_models.html"><a href="02_Mixed_effects_models.html"><i class="fa fa-check"></i>Mixed effects models</a>
+<ul>
+<li class="chapter" data-level="" data-path="02_Mixed_effects_models.html"><a href="02_Mixed_effects_models.html#lecture-2.3"><i class="fa fa-check"></i>Lecture 2.3</a></li>
+<li class="chapter" data-level="" data-path="02_Mixed_effects_models.html"><a href="02_Mixed_effects_models.html#lecture-2.4"><i class="fa fa-check"></i>Lecture 2.4</a>
+<ul>
+<li class="chapter" data-level="" data-path="02_Mixed_effects_models.html"><a href="02_Mixed_effects_models.html#modeling-assumptions"><i class="fa fa-check"></i>Modeling assumptions</a></li>
+<li class="chapter" data-level="" data-path="02_Mixed_effects_models.html"><a href="02_Mixed_effects_models.html#centering-your-covariates"><i class="fa fa-check"></i>Centering your covariates</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="02_Mixed_effects_models.html"><a href="02_Mixed_effects_models.html#lecture-2.5"><i class="fa fa-check"></i>Lecture 2.5</a>
+<ul>
+<li class="chapter" data-level="" data-path="02_Mixed_effects_models.html"><a href="02_Mixed_effects_models.html#part-i-within-versus-between-centering"><i class="fa fa-check"></i>Part I: within versus between centering</a></li>
+<li class="chapter" data-level="" data-path="02_Mixed_effects_models.html"><a href="02_Mixed_effects_models.html#part-ii-concept-of-maximum-likelihood"><i class="fa fa-check"></i>Part II: Concept of maximum likelihood</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="02_Mixed_effects_models.html"><a href="02_Mixed_effects_models.html#lecture-2.6"><i class="fa fa-check"></i>Lecture 2.6</a>
+<ul>
+<li class="chapter" data-level="" data-path="02_Mixed_effects_models.html"><a href="02_Mixed_effects_models.html#confidence-intervals"><i class="fa fa-check"></i>confidence intervals</a></li>
+<li class="chapter" data-level="" data-path="02_Mixed_effects_models.html"><a href="02_Mixed_effects_models.html#inference"><i class="fa fa-check"></i>Inference</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="03_Growth_curves.html"><a href="03_Growth_curves.html"><i class="fa fa-check"></i>Growth curves</a>
+<ul>
+<li class="chapter" data-level="" data-path="03_Growth_curves.html"><a href="03_Growth_curves.html#lecture-3.1"><i class="fa fa-check"></i>Lecture 3.1</a>
+<ul>
+<li class="chapter" data-level="" data-path="03_Growth_curves.html"><a href="03_Growth_curves.html#growth-curves-1"><i class="fa fa-check"></i>Growth curves</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="03_Growth_curves.html"><a href="03_Growth_curves.html#lecture-3.2"><i class="fa fa-check"></i>Lecture 3.2</a>
+<ul>
+<li class="chapter" data-level="" data-path="03_Growth_curves.html"><a href="03_Growth_curves.html#quadratic-growth-rb-chapter-6"><i class="fa fa-check"></i>Quadratic growth (R&amp;B chapter 6)</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="03_Growth_curves.html"><a href="03_Growth_curves.html#lecture-3.2-1"><i class="fa fa-check"></i>Lecture 3.2:</a>
+<ul>
+<li class="chapter" data-level="" data-path="03_Growth_curves.html"><a href="03_Growth_curves.html#model-building"><i class="fa fa-check"></i>Model Building</a></li>
+<li class="chapter" data-level="" data-path="03_Growth_curves.html"><a href="03_Growth_curves.html#adding-covariates"><i class="fa fa-check"></i>Adding covariates</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="03_Growth_curves.html"><a href="03_Growth_curves.html#lecture-3.3"><i class="fa fa-check"></i>Lecture 3.3</a>
+<ul>
+<li class="chapter" data-level="" data-path="03_Growth_curves.html"><a href="03_Growth_curves.html#comparing-models"><i class="fa fa-check"></i>Comparing models</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="04_Many_level_models.html"><a href="04_Many_level_models.html"><i class="fa fa-check"></i>Many level models</a>
+<ul>
+<li class="chapter" data-level="" data-path="04_Many_level_models.html"><a href="04_Many_level_models.html#lecture-4.1"><i class="fa fa-check"></i>Lecture 4.1</a>
+<ul>
+<li class="chapter" data-level="" data-path="04_Many_level_models.html"><a href="04_Many_level_models.html#level-2-covariates"><i class="fa fa-check"></i>Level 2 covariates</a></li>
+<li class="chapter" data-level="" data-path="04_Many_level_models.html"><a href="04_Many_level_models.html#level-3-covariates"><i class="fa fa-check"></i>Level 3 covariates</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="04_Many_level_models.html"><a href="04_Many_level_models.html#lecture-4.2-a"><i class="fa fa-check"></i>Lecture 4.2 (A)</a></li>
+<li class="chapter" data-level="" data-path="04_Many_level_models.html"><a href="04_Many_level_models.html#lecture-4.2-b"><i class="fa fa-check"></i>Lecture 4.2 (B)</a></li>
+<li class="chapter" data-level="" data-path="04_Many_level_models.html"><a href="04_Many_level_models.html#lecture-4.3"><i class="fa fa-check"></i>Lecture 4.3</a>
+<ul>
+<li class="chapter" data-level="" data-path="04_Many_level_models.html"><a href="04_Many_level_models.html#potential-outcomes"><i class="fa fa-check"></i>Potential outcomes</a></li>
+<li class="chapter" data-level="" data-path="04_Many_level_models.html"><a href="04_Many_level_models.html#cluster-randomized-trials"><i class="fa fa-check"></i>Cluster Randomized Trials</a></li>
+<li class="chapter" data-level="" data-path="04_Many_level_models.html"><a href="04_Many_level_models.html#multisite-experiments"><i class="fa fa-check"></i>Multisite Experiments</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="05_Generalized_linear_models.html"><a href="05_Generalized_linear_models.html"><i class="fa fa-check"></i>Generalized linear models</a>
+<ul>
+<li class="chapter" data-level="" data-path="05_Generalized_linear_models.html"><a href="05_Generalized_linear_models.html#lecture-5.1"><i class="fa fa-check"></i>Lecture 5.1</a>
+<ul>
+<li class="chapter" data-level="" data-path="05_Generalized_linear_models.html"><a href="05_Generalized_linear_models.html#poisson-models"><i class="fa fa-check"></i>Poisson models</a></li>
+<li class="chapter" data-level="" data-path="05_Generalized_linear_models.html"><a href="05_Generalized_linear_models.html#anatomy-of-a-generalized-linear-model"><i class="fa fa-check"></i>Anatomy of a Generalized Linear Model</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="05_Generalized_linear_models.html"><a href="05_Generalized_linear_models.html#lecture-5.2"><i class="fa fa-check"></i>Lecture 5.2</a>
+<ul>
+<li class="chapter" data-level="" data-path="05_Generalized_linear_models.html"><a href="05_Generalized_linear_models.html#population-average-versus-individual-school"><i class="fa fa-check"></i>Population average versus individual school</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="05_Generalized_linear_models.html"><a href="05_Generalized_linear_models.html#lecture-5.3"><i class="fa fa-check"></i>Lecture 5.3</a>
+<ul>
+<li class="chapter" data-level="" data-path="05_Generalized_linear_models.html"><a href="05_Generalized_linear_models.html#marginal-models-population-average-effects-no-random-effects"><i class="fa fa-check"></i>Marginal models: population average effects (no random effects)</a></li>
+<li class="chapter" data-level="" data-path="05_Generalized_linear_models.html"><a href="05_Generalized_linear_models.html#latent-growth-models"><i class="fa fa-check"></i>Latent growth models</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="05_Generalized_linear_models.html"><a href="05_Generalized_linear_models.html#lecture-5.4"><i class="fa fa-check"></i>Lecture 5.4</a>
+<ul>
+<li class="chapter" data-level="" data-path="05_Generalized_linear_models.html"><a href="05_Generalized_linear_models.html#over-dispersion-in-single-level-count-data"><i class="fa fa-check"></i>Over-dispersion in single-level count data</a></li>
+<li class="chapter" data-level="" data-path="05_Generalized_linear_models.html"><a href="05_Generalized_linear_models.html#over-dispersion-in-multi-level-count-data"><i class="fa fa-check"></i>Over-dispersion in multi-level count data</a></li>
+<li class="chapter" data-level="" data-path="05_Generalized_linear_models.html"><a href="05_Generalized_linear_models.html#subgroup-analysis"><i class="fa fa-check"></i>Subgroup analysis</a></li>
+<li class="chapter" data-level="" data-path="05_Generalized_linear_models.html"><a href="05_Generalized_linear_models.html#model-sensitivity-checks"><i class="fa fa-check"></i>Model sensitivity checks</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="06_Sandwich_estimator.html"><a href="06_Sandwich_estimator.html"><i class="fa fa-check"></i>Sandwich estimator</a>
+<ul>
+<li class="chapter" data-level="" data-path="06_Sandwich_estimator.html"><a href="06_Sandwich_estimator.html#lecture-6.1"><i class="fa fa-check"></i>Lecture 6.1</a></li>
+<li class="chapter" data-level="" data-path="06_Sandwich_estimator.html"><a href="06_Sandwich_estimator.html#lecture-6.2"><i class="fa fa-check"></i>Lecture 6.2</a></li>
+<li class="chapter" data-level="" data-path="06_Sandwich_estimator.html"><a href="06_Sandwich_estimator.html#lecture-6.3"><i class="fa fa-check"></i>Lecture 6.3</a>
+<ul>
+<li class="chapter" data-level="" data-path="06_Sandwich_estimator.html"><a href="06_Sandwich_estimator.html#method-1"><i class="fa fa-check"></i>Method 1</a></li>
+<li class="chapter" data-level="" data-path="06_Sandwich_estimator.html"><a href="06_Sandwich_estimator.html#method-2"><i class="fa fa-check"></i>Method 2</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="07_Bayesian_models.html"><a href="07_Bayesian_models.html"><i class="fa fa-check"></i>Bayesian models</a>
+<ul>
+<li class="chapter" data-level="" data-path="07_Bayesian_models.html"><a href="07_Bayesian_models.html#lecture-st.2"><i class="fa fa-check"></i>Lecture ST.2</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Linear Mixed Models</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="generalized-linear-models" class="section level1">
+<h1>Generalized linear models</h1>
+<div id="lecture-5.1" class="section level2">
+<h2>Lecture 5.1</h2>
+<p><strong>Generalized Linear Models</strong></p>
+<div id="poisson-models" class="section level3">
+<h3>Poisson models</h3>
+<p><strong>Case study:</strong> police stops by ethnic groups. Is the rate of police stops higher or lower for certain groups and precincts than we would predict given amount of crime. Variables are: police prencint, ethnicity, number of past arrests, number of stop and frisk events, and population. The unit of analysis is the police precinct level over a certain period of time.</p>
+<p><strong>Estimation strategy:</strong></p>
+<ol style="list-style-type: decimal">
+<li>We can watch any given precinct</li>
+<li>The number of stops are <em>count data</em></li>
+<li>Goal: is the number of stops relatively larger given crime levels?</li>
+</ol>
+<p>Want to estimate the <strong>rate</strong>: the numbner of stop and frisk per unit time.
+<span class="math display">\[
+Y_i \sim Poisson(\theta_i)
+\]</span>
+For each unit, at any given moment, the chance of seeing an event is the same as at any other moment. This chance is the <strong>rate</strong> we’re trying to estimate.</p>
+<p>The <strong>rate</strong> is the expected number of observations per unit time. With high rates (&gt;= 15), you can probably get away with a Gaussian model, though this would be a model with additive effects (unless the response is logged), rather than the multiplicative effects provided my Poisson models.</p>
+<p>The mean and variance in Poisson are tied together. Poisson distributions are indexed by a single <em>parameter</em> <span class="math inline">\(\theta\)</span>.</p>
+<p>We model the connection between our observed outcome and a rate parameter:
+<span class="math display">\[
+Y_i \sim Poisson(\theta_i)
+\]</span>
+And then we model our rate parameter as a function of our covariates:
+<span class="math display">\[
+\theta_i = exp(\eta) \\
+\color{grey}{\textrm{The linear predictor:}} \quad \eta = X_i\beta
+\]</span></p>
+<p>Say we have:
+<span class="math display">\[
+Y_i = Poisson(exp(2.8 + 0.012X_{i1} - 0.20X_{i2}))
+\]</span>
+<span class="math display">\[
+\theta_i = exp(2.8 + 0.012X_{i1} - 0.20X_{i2}) \\
+= e^{2.8} \times e^{0.012X_{i1}} \times e^{-0.20X_{i2}} \\
+\color{grey}{\textrm{Impact of inductrial zone is a scaling on average (rate):}} \quad e^{-0.20\times1} = 0.82
+\]</span>
+Need to exponentiate the coefficents before interpreting them as multiplicative effects.</p>
+<p><strong>Exposure</strong> <span class="math inline">\(u_i\)</span> is multplied by rate:
+<span class="math display">\[
+Y_i \sim Poisson(u_i\theta_i)
+\]</span>
+<strong>Offset</strong>: like a covariate where the coefficient is fixed at one:
+<span class="math display">\[
+\hat{Y_i} = u_i\theta_i = u_i exp(X_i\beta) = exp(log(u_i)) \times exp(X_i\beta) = exp[log(u_i) + X_i\beta] \\
+\color{grey}{\textrm{The offset:}} \quad log(u_i)
+\]</span></p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="05_Generalized_linear_models.html#cb26-1"></a>mod13 &lt;-<span class="st"> </span><span class="kw">glm</span>(stops <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">family =</span> <span class="kw">poisson</span>(<span class="dt">link =</span> <span class="st">&quot;log&quot;</span>), <span class="dt">offset =</span> <span class="kw">log</span>(past.arrests), <span class="dt">data =</span> stops)</span></code></pre></div>
+<p>The number of stops, on average, per unit time (so, about half of one stop per unit time).
+<span class="math display">\[
+e^{-0.59} = 0.55
+\]</span></p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="05_Generalized_linear_models.html#cb27-1"></a>mod13 &lt;-<span class="st"> </span><span class="kw">glm</span>(stops <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>ethnicity, <span class="dt">family =</span> <span class="kw">poisson</span>(<span class="dt">link =</span> <span class="st">&quot;log&quot;</span>), <span class="dt">offset =</span> <span class="kw">log</span>(past.arrests), <span class="dt">data =</span> stops)</span></code></pre></div>
+<p><span class="math display">\[
+stops_i = Poisson(u_i\theta_i) \\
+\theta_i = exp[ \beta_0 + \beta_1Hispanic_i + \beta_2White_i + log(u_i)]
+\]</span>
+where <span class="math inline">\(log(u_i)\)</span> is the log of prior arrests.</p>
+<p>Model fitting. Compare difference in likelihoods:
+<span class="math display">\[
+D \sim \chi^2_m \\
+E[D] = m
+\]</span></p>
+<p>Add precinct (this is basically a fixed effects model):</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="05_Generalized_linear_models.html#cb28-1"></a>mod13 &lt;-<span class="st"> </span><span class="kw">glm</span>(stops <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>ethnicity <span class="op">+</span><span class="st"> </span>precinct, <span class="dt">family =</span> <span class="kw">poisson</span>(<span class="dt">link =</span> <span class="st">&quot;log&quot;</span>), <span class="dt">offset =</span> <span class="kw">log</span>(past.arrests), <span class="dt">data =</span> stops)</span></code></pre></div>
+<p><strong>Overdispersion</strong></p>
+<p>The poisson model says <strong>variance depends on rate</strong>. Can use <strong>standardized residuals</strong> to detect overdispersion. Only 5% of standardized residuals should be outside of <span class="math inline">\(\pm 2\)</span> — if there is more than that, then there is overdispersion.</p>
+<p>Simulation:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="05_Generalized_linear_models.html#cb29-1"></a>N &lt;-<span class="st"> </span><span class="dv">200</span></span>
+<span id="cb29-2"><a href="05_Generalized_linear_models.html#cb29-2"></a>X &lt;-<span class="st"> </span><span class="kw">log</span>(<span class="kw">runif</span>(N, <span class="fl">0.1</span>, <span class="dv">3</span>))</span>
+<span id="cb29-3"><a href="05_Generalized_linear_models.html#cb29-3"></a>exposure &lt;-<span class="st"> </span><span class="kw">runif</span>(N, <span class="fl">0.5</span>, <span class="dv">2</span>)</span>
+<span id="cb29-4"><a href="05_Generalized_linear_models.html#cb29-4"></a>rate &lt;-<span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span>X</span>
+<span id="cb29-5"><a href="05_Generalized_linear_models.html#cb29-5"></a>Y &lt;-<span class="st"> </span><span class="kw">rpois</span>(N, <span class="dt">lambda =</span> exposure <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>(rate))</span>
+<span id="cb29-6"><a href="05_Generalized_linear_models.html#cb29-6"></a>  </span>
+<span id="cb29-7"><a href="05_Generalized_linear_models.html#cb29-7"></a>mod14 &lt;-<span class="st"> </span><span class="kw">glm</span>(Y <span class="op">~</span><span class="st"> </span>X, <span class="dt">family =</span> poisson, <span class="dt">offset =</span> <span class="kw">log</span>(exposure), <span class="dt">data =</span> df)  </span>
+<span id="cb29-8"><a href="05_Generalized_linear_models.html#cb29-8"></a>yhat &lt;-<span class="st"> </span><span class="kw">predict</span>(mod14, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb29-9"><a href="05_Generalized_linear_models.html#cb29-9"></a>z &lt;-<span class="st"> </span>(yhat <span class="op">/</span><span class="st"> </span>?) <span class="co">### ??????</span></span>
+<span id="cb29-10"><a href="05_Generalized_linear_models.html#cb29-10"></a><span class="kw">plot</span>()</span></code></pre></div>
+<p>So, we ask whether our standardized residuals are <strong>standard normal</strong>. Poisson model has its own heteroscasticity built it, but there can be more heteroscasticity than it can deal with.</p>
+<p>Can fix overdispersion using an overdispered Poisson model: a <em>quasipoisson</em> or <em>negative binomial</em> model. These both have extra parameters to allow extra scatter around what you fit.</p>
+</div>
+<div id="anatomy-of-a-generalized-linear-model" class="section level3">
+<h3>Anatomy of a Generalized Linear Model</h3>
+<ol style="list-style-type: decimal">
+<li>Data</li>
+<li>Predictor matrix</li>
+<li>Linear predictor</li>
+<li>Link function</li>
+</ol>
+</div>
+</div>
+<div id="lecture-5.2" class="section level2">
+<h2>Lecture 5.2</h2>
+<p><strong>Multilevel Logistic Regression</strong></p>
+<p>R&amp;B Ch. 10</p>
+<p><strong>Thailand Retention Data</strong>: students are in schools and are either retained (held back) or not.</p>
+<p><span class="math display">\[
+Y_{ij} \sim F(\mu_{ij}, \upsilon) \\
+E[Y_{ij}] = \mu_{ij}
+\]</span>
+<span class="math display">\[
+\eta_{ij} = g(\mu_{ij}) \quad \textrm{with} \quad Y_{ij} \sim F(\mu_{ij}, \upsilon)
+\]</span>
+where <span class="math inline">\(eta_{ij}\)</span> is the linear predictor.</p>
+<p><span class="math display">\[
+\eta_{ij} = \beta_{0j} + \beta_{1j}X_{1ij} + \beta_{2j}X_{2ij}
+\]</span>
+Note the lack of the residual term - that’s extra randomness that happens outside of this equation of the structural component of the model.</p>
+<p><span class="math display">\[
+\eta_{ij} = \beta_{0j} + \beta_{1j}X_{1ij} + \beta_{2j}X_{2ij} \\
+p_{ij} = logit^{-1}(\eta_{ij})
+\]</span></p>
+<p>Take out the random slopes for simplicity (the <span class="math inline">\(j\)</span> subscripts on the <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_2\)</span>), so this is a random intercept model.
+<span class="math display">\[
+\eta_{ij} = \beta_{0j} + \beta_{1}X_{1ij} + \beta_{2}X_{2ij}
+\]</span></p>
+<p>Level 2 is still a <strong>vanilla linear model</strong>, because we’re modeling the level-1 coefficients, which are continuous:
+<span class="math display">\[
+\beta_{qj} = \gamma_{q0} + \gamma_{q1}W_{ij} + ... u_{qi}
+\]</span></p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="05_Generalized_linear_models.html#cb30-1"></a>mod15 &lt;-<span class="st"> </span><span class="kw">glmer</span>(Repeat <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>schoolID), <span class="dt">data =</span> dat, <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;logit&quot;</span>))</span></code></pre></div>
+<ol style="list-style-type: decimal">
+<li><strong>The thing that gets us from the linear predictor to what we expect = link function.</strong></li>
+<li><strong>The thing that gets us from what we expect to what we see = family distribution.</strong></li>
+</ol>
+<p><strong>KEY POINT:</strong> <em>Typical</em> is not the same as population average due to non-linearlity!</p>
+<p>ICC - not so useful:</p>
+<ul>
+<li>ICC is the ratio of level-2 variance to total variance</li>
+<li>But different schools have different kids, and so different variances due to binomial</li>
+<li>There is no natural ICC ratio here</li>
+<li>Instead draw pictures and show people <strong>how much schools vary</strong>.</li>
+</ul>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="05_Generalized_linear_models.html#cb31-1"></a>mod15 &lt;-<span class="st"> </span><span class="kw">glmer</span>(Repeat <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>pped <span class="op">+</span><span class="st"> </span><span class="kw">msesc</span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>schoolID), <span class="dt">data =</span> dat, <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;logit&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="05_Generalized_linear_models.html#cb32-1"></a>dat<span class="op">$</span>eta_hat &lt;-<span class="st"> </span><span class="kw">predict</span>(mod15) <span class="co"># link scale</span></span>
+<span id="cb32-2"><a href="05_Generalized_linear_models.html#cb32-2"></a>dat<span class="op">$</span>eta_hat &lt;-<span class="st"> </span><span class="kw">predict</span>(mod15, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>) <span class="co"># response scale</span></span></code></pre></div>
+<div id="population-average-versus-individual-school" class="section level3">
+<h3>Population average versus individual school</h3>
+<p>Answering the question: what is the association between <code>pped</code> and response <strong>at a specific school</strong>.</p>
+</div>
+</div>
+<div id="lecture-5.3" class="section level2">
+<h2>Lecture 5.3</h2>
+<p><strong>Longitudinal Data with a Binary Outcome</strong></p>
+<p>Reading: R-H &amp; S Ch. 10 (in particular, 10.3 - 10.13)</p>
+<p>Toenail infection data: subjects randomly assigned to two antifungal treatments (RCT). Outcome is the separation of toenail from toebed.</p>
+<ol style="list-style-type: decimal">
+<li>Did the treatment work? (inference — are the two groups different from each other?)</li>
+<li>Did the treatment work well? (measure the relative speed of how these rates change)</li>
+</ol>
+<p><strong>Looking at missingness</strong></p>
+<p>Look at the pattern of missingness: MAR — missing at random. The missingness can be deduced from the remaining data. This plays well with MLM.</p>
+<p><strong>Looking at outcome data</strong></p>
+<p>Autocorrelation is an issue. Could think of it as a growth curve on a <strong>latent probability of toenail detachment</strong>.</p>
+<p><strong>Visualizations</strong></p>
+<p>Aggregating the data for visualization: look at proportions for each visit by treatment combo. But people who got better faster might have left the study.</p>
+<p>Issues: 1) differential dropout, 2) need to perform inference</p>
+<div id="marginal-models-population-average-effects-no-random-effects" class="section level3">
+<h3>Marginal models: population average effects (no random effects)</h3>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="05_Generalized_linear_models.html#cb33-1"></a>mod16 &lt;-<span class="st"> </span><span class="kw">glm</span>(outcome <span class="op">~</span><span class="st"> </span>treatment <span class="op">*</span><span class="st"> </span>month, <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;logit&quot;</span>), <span class="dt">data =</span> toes)</span></code></pre></div>
+<p><span class="math display">\[
+prob = \frac{odds}{1 + odds} \\
+prob = \frac{e^\beta}{1 + e^\beta} \\
+prob = \frac{1}{1 + e^{-\beta}}
+\]</span></p>
+<p>Intercept:
+$$
+logit(p) = -0.56 \
+p = logit^{-1}(-0.56) =  = 0.36</p>
+<p><span class="math display">\[
+Probability of detachment at 3 months for control group:
+\]</span>
+logit(p_{3mc}) = -0.56 + 3(-0.17) \
+p_{3mc} = 0.255
+$$</p>
+<p>Probability of detachment at 3 months for treatment group:
+<span class="math display">\[
+logit(p_{3mt}) = -0.56 + 3(-0.17) + 3(-0.07) \\
+p_{3mt} = 0.218
+\]</span></p>
+<p><strong>Two general strategies</strong></p>
+<ol style="list-style-type: decimal">
+<li>population focus (adjust SEs with clustered SEs): marginal models</li>
+<li>individual focus (for a specific person, what’s the advantage of treatment): MLM</li>
+</ol>
+</div>
+<div id="latent-growth-models" class="section level3">
+<h3>Latent growth models</h3>
+<p><span class="math inline">\(i\)</span> is time, <span class="math inline">\(j\)</span> is individual.</p>
+<p>Random intercept model (two level form):
+<span class="math display">\[
+Y_{ij} \sim Binomial(1, \pi_{ij}) \\
+logit(\pi_{ij}) = \beta_{0j} + \beta_{1j}Time_{ij} \\
+\beta_{0j} + \gamma_{00} + \gamma_{01}Z_{j} + u_j \\
+\beta_{1j} + \gamma_{10} + \gamma_{11}Z_{j}
+\]</span>
+Reduced form:
+<span class="math display">\[
+Y_{ij} \sim Binomial(1, \pi_{ij}) = Bern(\pi_{ij}) \\
+logit(\pi_{ij}) = \gamma_{00} + \gamma_{01}Z_{j} + \gamma_{1j}Time_{ij} + \gamma_{1j}Z_jTime_{ij} + u_j \\
+u_j \sim N(0, \tau_{00})
+\]</span></p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="05_Generalized_linear_models.html#cb34-1"></a>mod17 &lt;-<span class="st"> </span><span class="kw">glmer</span>(outcome <span class="op">~</span><span class="st"> </span>treatment <span class="op">*</span><span class="st"> </span>month <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>patient), <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;logit&quot;</span>), <span class="dt">data =</span> toes)</span></code></pre></div>
+<p><strong>With logistic models, random effects make fixed effects <em>conditional</em> effects:</strong> The individual effect is much more extreme. At the population level, the individual level variation reduces the treatment effect.</p>
+</div>
+</div>
+<div id="lecture-5.4" class="section level2">
+<h2>Lecture 5.4</h2>
+<p><strong>Multilevel Generalized Linear Models</strong></p>
+<p>Reading: Gelman &amp; Hill section 15.1</p>
+<p><strong>Multilevel Poisson — stop and frisk data</strong></p>
+<p>The poisson fixed effects made our comparisons <em>within precinct comparisons</em> (i.e., we asked, in a given place, was there imbalance?). But, we can make precinct a random effect — why? 1) to estimate how much precincts vary, and 2) obtain better estimates of individual precincts via partial pooling (discern which precincts are more or less “active”).</p>
+<p>Multilevel model:</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="05_Generalized_linear_models.html#cb35-1"></a>mod18 &lt;-<span class="st"> </span><span class="kw">glmer</span>(stops <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>ethnicity <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>precinct), </span>
+<span id="cb35-2"><a href="05_Generalized_linear_models.html#cb35-2"></a>               <span class="dt">offset =</span> <span class="kw">log</span>(past.arrests), </span>
+<span id="cb35-3"><a href="05_Generalized_linear_models.html#cb35-3"></a>               <span class="dt">family =</span> <span class="kw">poisson</span>(<span class="dt">link =</span> <span class="st">&quot;log&quot;</span>), </span>
+<span id="cb35-4"><a href="05_Generalized_linear_models.html#cb35-4"></a>               <span class="dt">data =</span> stops)</span></code></pre></div>
+<div id="over-dispersion-in-single-level-count-data" class="section level3">
+<h3>Over-dispersion in single-level count data</h3>
+<ol style="list-style-type: decimal">
+<li>quasipoisson</li>
+<li>negative binomial</li>
+<li>add a random effect for each observation (like adding a residual back in). This allows some cases to have more events than expected and some less, given exposure and observed covariates. This works because we can think of the individual cases as, in some sense, multiple observations (the individual counted events).</li>
+</ol>
+<p><span class="math display">\[
+y_i = Poisson(u_ie^{X_i\beta}) \\
+y_i = Poisson(u_ie^{X_i\beta + \epsilon}) \\
+\epsilon \sim N(0, \sigma^2)
+\]</span></p>
+<p>Observation level random effects to account for overdispersion - even in a none multilevel context. This is an alternative to a single level quasipoisson:</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="05_Generalized_linear_models.html#cb36-1"></a>mod19 &lt;-<span class="st"> </span><span class="kw">glmer</span>(stops <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>ethnicity <span class="op">+</span><span class="st"> </span>precinct <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>id), </span>
+<span id="cb36-2"><a href="05_Generalized_linear_models.html#cb36-2"></a>               <span class="dt">offset =</span> <span class="kw">log</span>(past.arrests), </span>
+<span id="cb36-3"><a href="05_Generalized_linear_models.html#cb36-3"></a>               <span class="dt">family =</span> <span class="kw">poisson</span>(<span class="dt">link =</span> <span class="st">&quot;log&quot;</span>), </span>
+<span id="cb36-4"><a href="05_Generalized_linear_models.html#cb36-4"></a>               <span class="dt">data =</span> stops)</span></code></pre></div>
+</div>
+<div id="over-dispersion-in-multi-level-count-data" class="section level3">
+<h3>Over-dispersion in multi-level count data</h3>
+<p>Full multilevel model accounting for overdispersion. The uncertainty estimates (standard errors) will increase in size:</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="05_Generalized_linear_models.html#cb37-1"></a>mod20 &lt;-<span class="st"> </span><span class="kw">glmer</span>(stops <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>ethnicity <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>precinct) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>id), </span>
+<span id="cb37-2"><a href="05_Generalized_linear_models.html#cb37-2"></a>               <span class="dt">offset =</span> <span class="kw">log</span>(past.arrests), </span>
+<span id="cb37-3"><a href="05_Generalized_linear_models.html#cb37-3"></a>               <span class="dt">family =</span> <span class="kw">poisson</span>(<span class="dt">link =</span> <span class="st">&quot;log&quot;</span>), </span>
+<span id="cb37-4"><a href="05_Generalized_linear_models.html#cb37-4"></a>               <span class="dt">data =</span> stops)</span></code></pre></div>
+</div>
+<div id="subgroup-analysis" class="section level3">
+<h3>Subgroup analysis</h3>
+<p>Two options:</p>
+<ol style="list-style-type: decimal">
+<li>Divide data up into groups (results in completely unpooled estimates for each subgroup)</li>
+<li>Full modeling (include interactions for the subgroups)</li>
+</ol>
+</div>
+<div id="model-sensitivity-checks" class="section level3">
+<h3>Model sensitivity checks</h3>
+<ol style="list-style-type: decimal">
+<li>Did our results depend of how we divided precincts?</li>
+<li>How much would things change if we tweaked our analysis?</li>
+</ol>
+<p>We don’t want to think that our findings are the result of our estimation strategy, but rather reflect the underlying data.</p>
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="04_Many_level_models.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="06_Sandwich_estimator.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/IQSS/dss-linear-mixed-models/edit/master/05_Generalized_linear_models.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["Linear_mixed_models.pdf", "Linear_mixed_models.epub"],
+"toc": {
+"collapse": "section",
+"scroll_highlight": true
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

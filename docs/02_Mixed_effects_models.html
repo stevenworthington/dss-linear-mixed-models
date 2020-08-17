@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Mixed effects models | Linear Mixed Models</title>
+  <meta name="description" content="Mixed effects models | Linear Mixed Models" />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Mixed effects models | Linear Mixed Models" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Mixed effects models | Linear Mixed Models" />
+  <meta name="github-repo" content="stevenworthington/dss-linear-mixed-models" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Mixed effects models | Linear Mixed Models" />
+  
+  <meta name="twitter:description" content="Mixed effects models | Linear Mixed Models" />
+  
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="01_Fixed_effects_models.html"/>
+<link rel="next" href="03_Growth_curves.html"/>
+<script src="libs/header-attrs-2.3/header-attrs.js"></script>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Linear Mixed Models</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Introduction</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#table-of-contents"><i class="fa fa-check"></i>Table of Contents</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#authors-and-sources"><i class="fa fa-check"></i>Authors and Sources</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="01_Fixed_effects_models.html"><a href="01_Fixed_effects_models.html"><i class="fa fa-check"></i>Fixed effects models</a>
+<ul>
+<li class="chapter" data-level="" data-path="01_Fixed_effects_models.html"><a href="01_Fixed_effects_models.html#lecture-1.2"><i class="fa fa-check"></i>Lecture 1.2</a></li>
+<li class="chapter" data-level="" data-path="01_Fixed_effects_models.html"><a href="01_Fixed_effects_models.html#lecture-2.1"><i class="fa fa-check"></i>Lecture 2.1</a>
+<ul>
+<li class="chapter" data-level="" data-path="01_Fixed_effects_models.html"><a href="01_Fixed_effects_models.html#fixed-effects-regression"><i class="fa fa-check"></i>Fixed effects regression</a></li>
+<li class="chapter" data-level="" data-path="01_Fixed_effects_models.html"><a href="01_Fixed_effects_models.html#level-1-predictors"><i class="fa fa-check"></i>Level 1 predictors</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="02_Mixed_effects_models.html"><a href="02_Mixed_effects_models.html"><i class="fa fa-check"></i>Mixed effects models</a>
+<ul>
+<li class="chapter" data-level="" data-path="02_Mixed_effects_models.html"><a href="02_Mixed_effects_models.html#lecture-2.3"><i class="fa fa-check"></i>Lecture 2.3</a></li>
+<li class="chapter" data-level="" data-path="02_Mixed_effects_models.html"><a href="02_Mixed_effects_models.html#lecture-2.4"><i class="fa fa-check"></i>Lecture 2.4</a>
+<ul>
+<li class="chapter" data-level="" data-path="02_Mixed_effects_models.html"><a href="02_Mixed_effects_models.html#modeling-assumptions"><i class="fa fa-check"></i>Modeling assumptions</a></li>
+<li class="chapter" data-level="" data-path="02_Mixed_effects_models.html"><a href="02_Mixed_effects_models.html#centering-your-covariates"><i class="fa fa-check"></i>Centering your covariates</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="02_Mixed_effects_models.html"><a href="02_Mixed_effects_models.html#lecture-2.5"><i class="fa fa-check"></i>Lecture 2.5</a>
+<ul>
+<li class="chapter" data-level="" data-path="02_Mixed_effects_models.html"><a href="02_Mixed_effects_models.html#part-i-within-versus-between-centering"><i class="fa fa-check"></i>Part I: within versus between centering</a></li>
+<li class="chapter" data-level="" data-path="02_Mixed_effects_models.html"><a href="02_Mixed_effects_models.html#part-ii-concept-of-maximum-likelihood"><i class="fa fa-check"></i>Part II: Concept of maximum likelihood</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="02_Mixed_effects_models.html"><a href="02_Mixed_effects_models.html#lecture-2.6"><i class="fa fa-check"></i>Lecture 2.6</a>
+<ul>
+<li class="chapter" data-level="" data-path="02_Mixed_effects_models.html"><a href="02_Mixed_effects_models.html#confidence-intervals"><i class="fa fa-check"></i>confidence intervals</a></li>
+<li class="chapter" data-level="" data-path="02_Mixed_effects_models.html"><a href="02_Mixed_effects_models.html#inference"><i class="fa fa-check"></i>Inference</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="03_Growth_curves.html"><a href="03_Growth_curves.html"><i class="fa fa-check"></i>Growth curves</a>
+<ul>
+<li class="chapter" data-level="" data-path="03_Growth_curves.html"><a href="03_Growth_curves.html#lecture-3.1"><i class="fa fa-check"></i>Lecture 3.1</a>
+<ul>
+<li class="chapter" data-level="" data-path="03_Growth_curves.html"><a href="03_Growth_curves.html#growth-curves-1"><i class="fa fa-check"></i>Growth curves</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="03_Growth_curves.html"><a href="03_Growth_curves.html#lecture-3.2"><i class="fa fa-check"></i>Lecture 3.2</a>
+<ul>
+<li class="chapter" data-level="" data-path="03_Growth_curves.html"><a href="03_Growth_curves.html#quadratic-growth-rb-chapter-6"><i class="fa fa-check"></i>Quadratic growth (R&amp;B chapter 6)</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="03_Growth_curves.html"><a href="03_Growth_curves.html#lecture-3.2-1"><i class="fa fa-check"></i>Lecture 3.2:</a>
+<ul>
+<li class="chapter" data-level="" data-path="03_Growth_curves.html"><a href="03_Growth_curves.html#model-building"><i class="fa fa-check"></i>Model Building</a></li>
+<li class="chapter" data-level="" data-path="03_Growth_curves.html"><a href="03_Growth_curves.html#adding-covariates"><i class="fa fa-check"></i>Adding covariates</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="03_Growth_curves.html"><a href="03_Growth_curves.html#lecture-3.3"><i class="fa fa-check"></i>Lecture 3.3</a>
+<ul>
+<li class="chapter" data-level="" data-path="03_Growth_curves.html"><a href="03_Growth_curves.html#comparing-models"><i class="fa fa-check"></i>Comparing models</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="04_Many_level_models.html"><a href="04_Many_level_models.html"><i class="fa fa-check"></i>Many level models</a>
+<ul>
+<li class="chapter" data-level="" data-path="04_Many_level_models.html"><a href="04_Many_level_models.html#lecture-4.1"><i class="fa fa-check"></i>Lecture 4.1</a>
+<ul>
+<li class="chapter" data-level="" data-path="04_Many_level_models.html"><a href="04_Many_level_models.html#level-2-covariates"><i class="fa fa-check"></i>Level 2 covariates</a></li>
+<li class="chapter" data-level="" data-path="04_Many_level_models.html"><a href="04_Many_level_models.html#level-3-covariates"><i class="fa fa-check"></i>Level 3 covariates</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="04_Many_level_models.html"><a href="04_Many_level_models.html#lecture-4.2-a"><i class="fa fa-check"></i>Lecture 4.2 (A)</a></li>
+<li class="chapter" data-level="" data-path="04_Many_level_models.html"><a href="04_Many_level_models.html#lecture-4.2-b"><i class="fa fa-check"></i>Lecture 4.2 (B)</a></li>
+<li class="chapter" data-level="" data-path="04_Many_level_models.html"><a href="04_Many_level_models.html#lecture-4.3"><i class="fa fa-check"></i>Lecture 4.3</a>
+<ul>
+<li class="chapter" data-level="" data-path="04_Many_level_models.html"><a href="04_Many_level_models.html#potential-outcomes"><i class="fa fa-check"></i>Potential outcomes</a></li>
+<li class="chapter" data-level="" data-path="04_Many_level_models.html"><a href="04_Many_level_models.html#cluster-randomized-trials"><i class="fa fa-check"></i>Cluster Randomized Trials</a></li>
+<li class="chapter" data-level="" data-path="04_Many_level_models.html"><a href="04_Many_level_models.html#multisite-experiments"><i class="fa fa-check"></i>Multisite Experiments</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="05_Generalized_linear_models.html"><a href="05_Generalized_linear_models.html"><i class="fa fa-check"></i>Generalized linear models</a>
+<ul>
+<li class="chapter" data-level="" data-path="05_Generalized_linear_models.html"><a href="05_Generalized_linear_models.html#lecture-5.1"><i class="fa fa-check"></i>Lecture 5.1</a>
+<ul>
+<li class="chapter" data-level="" data-path="05_Generalized_linear_models.html"><a href="05_Generalized_linear_models.html#poisson-models"><i class="fa fa-check"></i>Poisson models</a></li>
+<li class="chapter" data-level="" data-path="05_Generalized_linear_models.html"><a href="05_Generalized_linear_models.html#anatomy-of-a-generalized-linear-model"><i class="fa fa-check"></i>Anatomy of a Generalized Linear Model</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="05_Generalized_linear_models.html"><a href="05_Generalized_linear_models.html#lecture-5.2"><i class="fa fa-check"></i>Lecture 5.2</a>
+<ul>
+<li class="chapter" data-level="" data-path="05_Generalized_linear_models.html"><a href="05_Generalized_linear_models.html#population-average-versus-individual-school"><i class="fa fa-check"></i>Population average versus individual school</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="05_Generalized_linear_models.html"><a href="05_Generalized_linear_models.html#lecture-5.3"><i class="fa fa-check"></i>Lecture 5.3</a>
+<ul>
+<li class="chapter" data-level="" data-path="05_Generalized_linear_models.html"><a href="05_Generalized_linear_models.html#marginal-models-population-average-effects-no-random-effects"><i class="fa fa-check"></i>Marginal models: population average effects (no random effects)</a></li>
+<li class="chapter" data-level="" data-path="05_Generalized_linear_models.html"><a href="05_Generalized_linear_models.html#latent-growth-models"><i class="fa fa-check"></i>Latent growth models</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="05_Generalized_linear_models.html"><a href="05_Generalized_linear_models.html#lecture-5.4"><i class="fa fa-check"></i>Lecture 5.4</a>
+<ul>
+<li class="chapter" data-level="" data-path="05_Generalized_linear_models.html"><a href="05_Generalized_linear_models.html#over-dispersion-in-single-level-count-data"><i class="fa fa-check"></i>Over-dispersion in single-level count data</a></li>
+<li class="chapter" data-level="" data-path="05_Generalized_linear_models.html"><a href="05_Generalized_linear_models.html#over-dispersion-in-multi-level-count-data"><i class="fa fa-check"></i>Over-dispersion in multi-level count data</a></li>
+<li class="chapter" data-level="" data-path="05_Generalized_linear_models.html"><a href="05_Generalized_linear_models.html#subgroup-analysis"><i class="fa fa-check"></i>Subgroup analysis</a></li>
+<li class="chapter" data-level="" data-path="05_Generalized_linear_models.html"><a href="05_Generalized_linear_models.html#model-sensitivity-checks"><i class="fa fa-check"></i>Model sensitivity checks</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="06_Sandwich_estimator.html"><a href="06_Sandwich_estimator.html"><i class="fa fa-check"></i>Sandwich estimator</a>
+<ul>
+<li class="chapter" data-level="" data-path="06_Sandwich_estimator.html"><a href="06_Sandwich_estimator.html#lecture-6.1"><i class="fa fa-check"></i>Lecture 6.1</a></li>
+<li class="chapter" data-level="" data-path="06_Sandwich_estimator.html"><a href="06_Sandwich_estimator.html#lecture-6.2"><i class="fa fa-check"></i>Lecture 6.2</a></li>
+<li class="chapter" data-level="" data-path="06_Sandwich_estimator.html"><a href="06_Sandwich_estimator.html#lecture-6.3"><i class="fa fa-check"></i>Lecture 6.3</a>
+<ul>
+<li class="chapter" data-level="" data-path="06_Sandwich_estimator.html"><a href="06_Sandwich_estimator.html#method-1"><i class="fa fa-check"></i>Method 1</a></li>
+<li class="chapter" data-level="" data-path="06_Sandwich_estimator.html"><a href="06_Sandwich_estimator.html#method-2"><i class="fa fa-check"></i>Method 2</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="07_Bayesian_models.html"><a href="07_Bayesian_models.html"><i class="fa fa-check"></i>Bayesian models</a>
+<ul>
+<li class="chapter" data-level="" data-path="07_Bayesian_models.html"><a href="07_Bayesian_models.html#lecture-st.2"><i class="fa fa-check"></i>Lecture ST.2</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Linear Mixed Models</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="mixed-effects-models" class="section level1">
+<h1>Mixed effects models</h1>
+<div id="lecture-2.3" class="section level2">
+<h2>Lecture 2.3</h2>
+<ol style="list-style-type: decimal">
+<li>gender gap and math achievement</li>
+</ol>
+<p>Two level notation
+<span class="math display">\[
+math_{ij} = \beta_{0j} + \beta_1*female_{ij} + \epsilon_{ij} \\  
+\beta_{0j} = \mu + U_{0j}                                         
+\]</span>
+where <span class="math inline">\(\epsilon \sim N(0, \sigma^2)\)</span> and <span class="math inline">\(U_{0j} \sim N(0, \sigma^2)\)</span></p>
+<p>Single level notation
+<span class="math display">\[
+math_{ij} = \mu + \beta1*female_{ij} + U_{0j} + \epsilon_{ij}   
+\]</span>
+where <span class="math inline">\(U_{0j}\)</span> is the random intercept.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="02_Mixed_effects_models.html#cb4-1"></a>mod1 &lt;-<span class="st"> </span><span class="kw">lmer</span>(math <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>female <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>id), <span class="dt">data =</span> hsb)</span>
+<span id="cb4-2"><a href="02_Mixed_effects_models.html#cb4-2"></a><span class="kw">summary</span>(mod1)</span></code></pre></div>
+<pre><code>## Linear mixed model fit by REML [&#39;lmerMod&#39;]
+## Formula: math ~ 1 + female + (1 | id)
+##    Data: hsb
+## 
+## REML criterion at convergence: 47056
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -3.1956 -0.7506  0.0379  0.7704  2.6211 
+## 
+## Random effects:
+##  Groups   Name        Variance Std.Dev.
+##  id       (Intercept)  8.169   2.858   
+##  Residual             38.850   6.233   
+## Number of obs: 7185, groups:  id, 160
+## 
+## Fixed effects:
+##             Estimate Std. Error t value
+## (Intercept)  13.3449     0.2547  52.400
+## female       -1.3590     0.1714  -7.927
+## 
+## Correlation of Fixed Effects:
+##        (Intr)
+## female -0.350</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="02_Mixed_effects_models.html#cb6-1"></a><span class="co"># Intercept is \mu, \beta_1 is female, 1 in parentheses is the random intercept (U_{0j})</span></span></code></pre></div>
+<p>Extend to Catholic schools (sector variable):</p>
+<p>Two level notation
+<span class="math display">\[
+math_{ij} = \beta_{0j} + \beta_1*female_{ij} + \epsilon_{ij} \\     %% level 1, where \epsilon \sim N(0, \sigma^2)
+\beta_{0j} =  \mu + U_{0j} + \gamma_{01}*sector_j  \\               %% level 2, where U_{0j} \sim N(0, \sigma^2)
+\beta_{1j} = \gamma_{10} + \gamma_{11}*sector_j                     %% level 2, add sector at level 2
+\]</span></p>
+<p>First subscript tells us which beta, Second subscript tells us which which piece inside the equation - so sequentially from 0 to n for each term.</p>
+<p>Single level notation
+<span class="math display">\[
+math_{ij} = \beta_{0j} + \beta_1*female_{ij} + \epsilon_{ij} \\    %% level 1
+  = (\gamma_{00} + \gamma_{01}*sector_j + U_{0j}) + (\gamma_{10} + \gamma_{11}*sector_j) + female_j + \epsilon_{ij} \\
+  = \gamma_{00} + \gamma_{01}*sector_j + U_{0j} + \gamma_{10}*female + \gamma_{11}*sectorFemale_j + \epsilon_{ij}  
+\]</span></p>
+<p>The coefficient for the interaction is <span class="math inline">\(\gamma_{11}\)</span>.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="02_Mixed_effects_models.html#cb7-1"></a>mod2 &lt;-<span class="st"> </span><span class="kw">lmer</span>(math <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>sector <span class="op">+</span><span class="st"> </span>female <span class="op">+</span><span class="st"> </span>sector <span class="op">:</span><span class="st"> </span>female <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>id ), <span class="dt">data =</span> hsb)</span>
+<span id="cb7-2"><a href="02_Mixed_effects_models.html#cb7-2"></a><span class="kw">summary</span>(mod2)</span></code></pre></div>
+<pre><code>## Linear mixed model fit by REML [&#39;lmerMod&#39;]
+## Formula: math ~ 1 + sector + female + sector:female + (1 | id)
+##    Data: hsb
+## 
+## REML criterion at convergence: 47017.2
+## 
+## Scaled residuals: 
+##      Min       1Q   Median       3Q      Max 
+## -3.15363 -0.75077  0.03403  0.76707  2.61443 
+## 
+## Random effects:
+##  Groups   Name        Variance Std.Dev.
+##  id       (Intercept)  6.286   2.507   
+##  Residual             38.849   6.233   
+## Number of obs: 7185, groups:  id, 160
+## 
+## Fixed effects:
+##                       Estimate Std. Error t value
+## (Intercept)            12.1714     0.3056  39.831
+## sectorcatholic          2.6177     0.4667   5.608
+## female                 -1.4818     0.2092  -7.085
+## sectorcatholic:female   0.3338     0.3618   0.922
+## 
+## Correlation of Fixed Effects:
+##             (Intr) sctrct female
+## sectorcthlc -0.655              
+## female      -0.360  0.235       
+## sctrcthlc:f  0.208 -0.402 -0.578</code></pre>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="02_Mixed_effects_models.html#cb9-1"></a><span class="co"># Intercept is \mu, \beta_1 is female, 1 in parentheses is the random intercept (U_{0j})</span></span></code></pre></div>
+<p>Covary - having an unusual intercept can be predictive of having an unsual slope - knowing one tells you about the other.
+Intercepts and slopes can covary - pulled from a multivariate normal distribution. Intercept and slope are tied together.</p>
+<p>Covariance = correlation on scale of original variables
+Correlation = unitless</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="02_Mixed_effects_models.html#cb10-1"></a>mod3 &lt;-<span class="st"> </span><span class="kw">lmer</span>(math <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>ses <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>ses <span class="op">|</span><span class="st"> </span>id ), <span class="dt">data =</span> hsb)</span>
+<span id="cb10-2"><a href="02_Mixed_effects_models.html#cb10-2"></a><span class="kw">summary</span>(mod3)</span></code></pre></div>
+<pre><code>## Linear mixed model fit by REML [&#39;lmerMod&#39;]
+## Formula: math ~ 1 + ses + (1 + ses | id)
+##    Data: hsb
+## 
+## REML criterion at convergence: 46640.4
+## 
+## Scaled residuals: 
+##      Min       1Q   Median       3Q      Max 
+## -3.12272 -0.73046  0.02144  0.75610  2.94356 
+## 
+## Random effects:
+##  Groups   Name        Variance Std.Dev. Corr 
+##  id       (Intercept)  4.8287  2.1974        
+##           ses          0.4129  0.6426   -0.11
+##  Residual             36.8301  6.0688        
+## Number of obs: 7185, groups:  id, 160
+## 
+## Fixed effects:
+##             Estimate Std. Error t value
+## (Intercept)  12.6650     0.1898   66.71
+## ses           2.3938     0.1181   20.27
+## 
+## Correlation of Fixed Effects:
+##     (Intr)
+## ses -0.045</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="02_Mixed_effects_models.html#cb12-1"></a><span class="co"># random intercept and slope for ses</span></span>
+<span id="cb12-2"><a href="02_Mixed_effects_models.html#cb12-2"></a><span class="co"># to get covariance, you can multiply the correlation between intercept and slope with the intercept variance and then the slope variance</span></span></code></pre></div>
+<p>Empirical Bayes estimates over-shrink. They provide too much pooling. Can simulate from the model to mitigate this. So, generate random schools from the model to simulate more accurately the variation.</p>
+</div>
+<div id="lecture-2.4" class="section level2">
+<h2>Lecture 2.4</h2>
+<div id="modeling-assumptions" class="section level3">
+<h3>Modeling assumptions</h3>
+<p>Assumptions are less important for describing trends in data, rather than estimating causal effects.</p>
+<ol style="list-style-type: decimal">
+<li>Level 1 exogeneity: <span class="math inline">\(r_{ij} \overset{i.i.d.}{\sim} N(0, \sigma^2)\)</span> &lt;– classic OLS assumptions –&gt;</li>
+<li>Level 2 exogeneity: <span class="math inline">\(Cov(X_{qij}, r_{ij} = 0\)</span></li>
+<li>Level 1 homoskedasticity: <span class="math inline">\(u_j = (u_{0j}, ..., u_{Qj})&#39; \overset{i.i.d}{\sim} N()\)</span></li>
+<li>Level 2 homoskedasticity:</li>
+<li>Uncorrelation of residuals: <span class="math inline">\(Cov(r_{ij}, u_{qj}) = 0\)</span> &lt;– cross level assumptions –&gt;</li>
+<li>Uncorrelation of random effects: $Cov(X_{qij}, $</li>
+<li>Uncorrelation of residuals with random effects:</li>
+<li>Normal distribution of random effects (less important):</li>
+</ol>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="02_Mixed_effects_models.html#cb13-1"></a>mod4 &lt;-<span class="st"> </span><span class="kw">lmer</span>(math <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>female <span class="op">+</span><span class="st"> </span>sector <span class="op">+</span><span class="st"> </span>ses <span class="op">+</span><span class="st"> </span>sector <span class="op">:</span><span class="st"> </span>ses <span class="op">+</span><span class="st"> </span>meanses <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>ses <span class="op">|</span><span class="st"> </span>id), <span class="dt">data =</span> hsb)</span>
+<span id="cb13-2"><a href="02_Mixed_effects_models.html#cb13-2"></a><span class="kw">summary</span>(mod4)</span></code></pre></div>
+<pre><code>## Linear mixed model fit by REML [&#39;lmerMod&#39;]
+## Formula: math ~ 1 + female + sector + ses + sector:ses + meanses + (1 +  
+##     ses | id)
+##    Data: hsb
+## 
+## REML criterion at convergence: 46462.9
+## 
+## Scaled residuals: 
+##      Min       1Q   Median       3Q      Max 
+## -3.08893 -0.73219  0.02407  0.76266  2.92613 
+## 
+## Random effects:
+##  Groups   Name        Variance Std.Dev. Corr
+##  id       (Intercept)  2.11395 1.454        
+##           ses          0.03096 0.176    0.65
+##  Residual             36.60081 6.050        
+## Number of obs: 7185, groups:  id, 160
+## 
+## Fixed effects:
+##                    Estimate Std. Error t value
+## (Intercept)         12.7905     0.2087  61.299
+## female              -1.1824     0.1616  -7.317
+## sectorcatholic       1.2945     0.2927   4.423
+## ses                  2.7274     0.1428  19.100
+## meanses              3.0441     0.3665   8.306
+## sectorcatholic:ses  -1.3062     0.2097  -6.229
+## 
+## Correlation of Fixed Effects:
+##             (Intr) female sctrct ses    meanss
+## female      -0.396                            
+## sectorcthlc -0.636 -0.012                     
+## ses          0.090  0.047 -0.040              
+## meanses      0.213  0.028 -0.335 -0.212       
+## sctrcthlc:s -0.105 -0.014  0.064 -0.645 -0.020</code></pre>
+<p><strong>Understanding assumptions by breaking them:</strong></p>
+<ol style="list-style-type: decimal">
+<li>Level 1 heteroskedasticity - if high SES students have more variable math achievement than low SES students.</li>
+<li>Level 2 heteroskedasticity - if catholic schools are more variable (in their random offsets) than public schools.</li>
+<li>Level 1 exogeneity: if the association between SES and math acheivement is not linear.</li>
+<li>Level 2 exogeneity: this one is fine, as long as we have categorical level-2 predictors. (with categorical predictirs, we are always ``linear’’). For continuous level-2 predictors, we would need a linear relationship again.</li>
+</ol>
+<p>Assumptions 2, 4, and 6 can cause bias (i.e., relationship between variables in the ``structural’’ part of the model and the error terms. While assumptions 1, 3 and 5 can mess up variance components (ie., consistency of the standard errors, accuracy of the variance estimates, accuracy of confidence intervals and hypothesis tests).</p>
+</div>
+<div id="centering-your-covariates" class="section level3">
+<h3>Centering your covariates</h3>
+<p><strong>Intercepts</strong></p>
+<p><span class="math display">\[
+income_i = \beta_0 + \beta_1SAT_i + \epsilon_i \\
+\hat{\beta_0} = 1000 \\
+\hat{\beta_1} = 3
+\]</span></p>
+<p>When intercepts are far away, we get a slight change in slope associated with a large change in intercept. They are quite correlated. With centering, changing the slope doesn’t really change the intercept. The intercept is more the overall mean, and therefore useful. Decoupling slope and intercept stops each one from messing with the other and aids in estimation - can end up with high or low random effects correlations if not centered. <strong>If you see that the random intercept and slope are correlated after mean centering, then this means the correlation is something structural about the data, not something mechanical about estimation</strong>.</p>
+<p><strong>Group mean centering:</strong> intercepts are now means of the whole group (i.e., school). Individual level covariate now measures departure from the group the individual is in. <span class="math inline">\(y_{ij} = \alpha_j + \beta_j(X_{ij} - \bar{X}_j) + \epsilon_{ij}\)</span> where <span class="math inline">\(\bar{X}_j = 500\)</span></p>
+<p><strong>Grand mean centering:</strong> intercepts are now adjusted means. <span class="math inline">\(y_{ij} = \alpha_j + \beta_j(X_{ij} - \bar{X}) + \epsilon_{ij}\)</span> where <span class="math inline">\(\bar{X} = 500\)</span>.</p>
+<p><strong>Within versus between centering:</strong></p>
+</div>
+</div>
+<div id="lecture-2.5" class="section level2">
+<h2>Lecture 2.5</h2>
+<div id="part-i-within-versus-between-centering" class="section level3">
+<h3>Part I: within versus between centering</h3>
+<p>Dataset - birthweight and smoking (Swedish dataset). Level 1 - babies. Level 2 - mother. Can do between mother comparisons and within mother comparisons. Think about regression as a form of matching. Between mother confounders will be time invariant, while within mother confounders will be time variant. Why did the mother smoke for one pregnancy but not the other? Do we have a variable that identifies the reason? Like was she large and sedantary, then became a marathon runner. Cannot do age to age within comparisons - same mother giving birth at age 20 cannot be compaared to her later self giving birth at age 40 - this would need to be between mother. Though you could use age-adjusted birthweights for within comparisons.</p>
+<p>Estimating between: aggregate data to group level, then regress average birthweight onto the averages of the predictors. A kind of dose-response model. Averaging works for linear models.</p>
+<p>Estimating within: take out between variation and then regress - this is fixed effects regression. Alternative - within-group recentering (subtract mother-level means from outcomes?? and all covariates - see RH&amp;S pg 145).</p>
+<p>Estimating both with a MLM: We can allow for different within and between effects. So for birth <span class="math inline">\(i\)</span> of mother <span class="math inline">\(j\)</span>:</p>
+<p><span class="math display">\[
+y_{ij} = \beta_1 + B^W(S_{ij} - \bar{S}_{.j}) + \beta^B\bar{S}_{.j} + \xi_j + \epsilon_{ij}
+\]</span>
+with <span class="math inline">\(S_{ij}\)</span> smoking status and <span class="math inline">\(\bar{S}_j\)</span> average smoking status for mother <span class="math inline">\(j\)</span>. Here the notation is that <span class="math inline">\(\gamma_0\)</span> is <span class="math inline">\(\beta_1\)</span> (the fixed effects intercept) and <span class="math inline">\(u_j\)</span> is <span class="math inline">\(\xi_j\)</span> (the random effect residual - random deviations for the <span class="math inline">\(j\)</span> groups from the fixed effects intecept). <span class="math inline">\(\beta_1 = 3238gms\)</span>, <span class="math inline">\(\beta^W = -105\)</span>, <span class="math inline">\(\beta^B = 183\)</span>.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="02_Mixed_effects_models.html#cb15-1"></a>dat &lt;-<span class="st"> </span>dat <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(mid) <span class="op">%&gt;%</span></span>
+<span id="cb15-2"><a href="02_Mixed_effects_models.html#cb15-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">smokem =</span> <span class="kw">mean</span>(smoke),</span>
+<span id="cb15-3"><a href="02_Mixed_effects_models.html#cb15-3"></a>         <span class="dt">smokec =</span> smoke <span class="op">-</span><span class="st"> </span>smokem)</span>
+<span id="cb15-4"><a href="02_Mixed_effects_models.html#cb15-4"></a></span>
+<span id="cb15-5"><a href="02_Mixed_effects_models.html#cb15-5"></a>mod5 &lt;-<span class="st"> </span><span class="kw">lmer</span>(birthweight <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>smokec <span class="op">+</span><span class="st"> </span>smokem <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>mid), <span class="dt">data =</span> dat)</span></code></pre></div>
+<p>Deviations from cluster means are automatically uncorrlelated with the group means - solution to one of the model assuptions (this is the hybrid model).</p>
+<p>Now the same model with the HSB data:
+<span class="math display">\[
+y_{ij} = \beta_{0j} + \beta_wSES_{ij} + \beta_b\bar{SES}_j + \epsilon_{ij} \\
+\beta_{ij} = \gamma_0 + u_{0j}
+\]</span>
+Within coef estimates slope inside the school. Between coef estimates how the averages of the school relate to the outcome. <strong>Contextual effect:</strong> The expected difference in outcomes from being in school 2 versus school 1 (but with the same SES) - in R&amp;B pg 140. The between effect is basically the contextual effect plus the within effect. If you group mean center the within variable, then the between variable becomes and estimate of the contextual effect - is this right?</p>
+</div>
+<div id="part-ii-concept-of-maximum-likelihood" class="section level3">
+<h3>Part II: Concept of maximum likelihood</h3>
+<ol style="list-style-type: decimal">
+<li>The <strong>model</strong>: a description or recipe of how the data might have come to be (a data generating process). The model tells us what predictions are possible.</li>
+<li>The <strong>parameters</strong>: numbers that makes this general recipe more specific.</li>
+</ol>
+<p>What parameters of this model make your data more <strong>likely</strong>?</p>
+</div>
+</div>
+<div id="lecture-2.6" class="section level2">
+<h2>Lecture 2.6</h2>
+<p><strong>Inference for MLMs</strong></p>
+<p>We get 3 things from MLMs:</p>
+<ol style="list-style-type: decimal">
+<li>fixed effects</li>
+<li>variance and covariance parameters (<span class="math inline">\(\tau\)</span>) - variances and covariances of the hyperparameters</li>
+<li>With empirical Bayes as a <em>second step</em>, estimated random effects for each group (not the variances, but the actual estimates for each group). Inference for these estimates is very shaky - generally don’t do it.</li>
+</ol>
+<p>Second level predictors modify intercepts or slopes. If they modify slopes, then that is an interaction with the first level predictor associated with that slope - it moderates the slope of the first level predictor.</p>
+<p>See Chapter 4 in BR book.</p>
+<div id="confidence-intervals" class="section level3">
+<h3>confidence intervals</h3>
+<p><strong>normal approximation</strong>:</p>
+<p><span class="math display">\[
+\sqrt{n} \left( \hat{\beta} - \beta \right) \rightarrow N(0, \tau^2) \\
+SE = \frac{\tau}{\sqrt{n}}
+\]</span>
+As sample size grows, the estimated parameters will be normally distributed about the true parameters, and the variance will shrink with the sample size towards an estimable value.</p>
+<p>If the sampling distribution is relatively symmetric and bell-shaped, a 95% confidence interval can be estimated using:</p>
+<p><span class="math display">\[
+statistic \pm 2 \times \widehat{SE}
+\]</span></p>
+<p>Confidence intervals don’t tell you whether you’re right or wrong for a given project, but rather how often you’ll be right over time.</p>
+<p>Normal approximation assumes that we know <span class="math inline">\(\tau\)</span>, but we don’t, we estimate it.</p>
+<p><strong>variance covariance estimates</strong>:</p>
+<p>Uncertainty estimnates are hard to get and are generally unreliable. But, we can test whether the estimates are different from zero. There are no standard errors for variance parameters - because standard errors only really make sense if the distribution is the estimator is more or less symmetric. But, for variance parameters, the distribution is skewed (bounded at zero). This boundary distorts normality.</p>
+<p><strong>profile likelihood confidence intervals</strong>:</p>
+<p>Basically asks, “what is likely if we let other parameters fit as best they can?”. Lays down a number line and sets grid points, then iterates over the grid and determines which values on the grid are believable.</p>
+</div>
+<div id="inference" class="section level3">
+<h3>Inference</h3>
+<p>Compare your data to what you would have gotten were your hull hypothesis true (i.e., compare what we have to what we should have had).</p>
+<ul>
+<li>Likelihood ratio tests
+<ul>
+<li>best</li>
+</ul></li>
+<li>Wald tests
+<ul>
+<li>good, but not good for variance parameters with skewed distributions</li>
+</ul></li>
+<li>ANOVA / F tests</li>
+<li>score tests</li>
+</ul>
+<p><strong>P-values</strong>: Gelman “There are no zeros in social science”.</p>
+<p><strong>Wald test (t-test)</strong>:</p>
+<p><span class="math display">\[
+t = \frac{\hat{\beta} - \beta_{hyp}}{\widehat{se}(\hat{\beta})}
+\]</span>
+The chance of reaching your “extreme value” <span class="math inline">\(t\)</span> by chance if the null hypothesis is correct.</p>
+<p>A problem with t-tests - degrees of freedom.</p>
+<p><span class="math display">\[
+H_0 : \gamma_{10} = 0
+\]</span>
+where:</p>
+<p><span class="math display">\[
+\beta_{1j} = \gamma_{10} + u_{1j}
+\]</span>
+The above null should be extended to include a test of whether the random effects variance for <span class="math inline">\(u_{1j}\)</span> is also zero - in other words, no variance around the fixed effect of zero.</p>
+<p>By hand:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="02_Mixed_effects_models.html#cb16-1"></a><span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw">pnorm</span>(t, <span class="dt">lower.tail =</span> <span class="ot">FALSE</span>)</span></code></pre></div>
+<p>The number of degrees of freedom tells you which parameters were harder or easier to estimate given the clustered nature of the data. Group mean centering can increase degrees of freedom.</p>
+<p><strong>Likelihood ratio test</strong>:</p>
+<p>if the likelihoods are basically the same, we accept the null. If the <em>constrained</em> model fits like crap, then we reject the null. To test, we compare the ratio of likelihoods.</p>
+<p>Basic idea: if <span class="math inline">\(\gamma_{00}\)</span> is actually 0, then omitting it from the model shouldn’t make much difference.</p>
+<p><span class="math display">\[
+D = -2log \frac{L(\textrm{simple model})}{L(\textrm{complex model})}
+\]</span>
+The likelihood ratio statistic has a <span class="math inline">\(\chi^2\)</span> distribution:</p>
+<p><span class="math display">\[
+D \sim \chi^2
+\]</span></p>
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="01_Fixed_effects_models.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="03_Growth_curves.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/IQSS/dss-linear-mixed-models/edit/master/02_Mixed_effects_models.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["Linear_mixed_models.pdf", "Linear_mixed_models.epub"],
+"toc": {
+"collapse": "section",
+"scroll_highlight": true
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
