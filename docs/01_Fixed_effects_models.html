@@ -174,7 +174,7 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li class="chapter" data-level="" data-path="03_Growth_curves.html"><a href="03_Growth_curves.html#quadratic-growth-rb-chapter-6"><i class="fa fa-check"></i>Quadratic growth (R&amp;B chapter 6)</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="03_Growth_curves.html"><a href="03_Growth_curves.html#lecture-3.2-1"><i class="fa fa-check"></i>Lecture 3.2:</a>
+<li class="chapter" data-level="" data-path="03_Growth_curves.html"><a href="03_Growth_curves.html#lecture-3.2-1"><i class="fa fa-check"></i>Lecture 3.2</a>
 <ul>
 <li class="chapter" data-level="" data-path="03_Growth_curves.html"><a href="03_Growth_curves.html#model-building"><i class="fa fa-check"></i>Model Building</a></li>
 <li class="chapter" data-level="" data-path="03_Growth_curves.html"><a href="03_Growth_curves.html#adding-covariates"><i class="fa fa-check"></i>Adding covariates</a></li>
@@ -266,7 +266,7 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
 MA_i = \beta_0 + \beta_1*SES + \beta_2*I(id=2)... \beta_k*I(id=k)
 \]</span></p>
 <p>School level fixed effects — allow each school to differ. They will raise or lower the slope of SES depending on the school. The indicators adjust for school-level differences — called <strong>fixed effects</strong>.
-<strong>This “completely pools” the SES relationship — it’s the same for each school. THIS IS INCORRECT</strong></p>
+<strong>This “completely pools” the SES relationship — it’s the same for each school. THIS IS INCORRECT — FIXED EFFECTS RESULT IN NO POOLING</strong></p>
 <p>Drop the intercept when using fixed effects? But this would force SES through the origin, no?</p>
 <p>Have NOT pooled the intercept, but HAVE completely pooled the slope.</p>
 <p>Models impose structure - if the structure is not true, our model estimates can be wrong.</p>
@@ -275,13 +275,18 @@ MA_i = \beta_0 + \beta_1*SES + \beta_2*I(id=2)... \beta_k*I(id=k)
 <p>Point estimates the same as fitting each school separately. But, when fitted together, you get one estimate for the residual variance, but when fitted separately, you get different residual variances for each school.</p>
 <p>Sorting out the measurement error versus the structure - are the slopes really different or do they just look different?</p>
 <p>Inference - separating what is real from what is random.</p>
-<p>dplyr Data pipeline - data gets handed to the next thing in line, then the output of that gets handed to the next thing in line.</p>
+<p><code>dplyr</code> Data pipeline - data gets handed to the next thing in line, then the output of that gets handed to the next thing in line.</p>
 <p>Overdispersion: Dots stacked up. Jitter the dots. Each dot is average of some school. More variance you have across the dots, the more overdispersion you have.</p>
 <p>How much modeling flexibility is the right amount? Need a model flexible enough to capture the main structure of the data, but not so flexible that they’re hard to estimate.</p>
 </div>
 <div id="lecture-2.1" class="section level2">
 <h2>Lecture 2.1</h2>
-<p>Aggregation is unsatisfying: 1) underpowered, 2) biased, 3) heteroscedastic.</p>
+<p>Aggregation is unsatisfying:</p>
+<ol style="list-style-type: decimal">
+<li>underpowered</li>
+<li>biased</li>
+<li>heteroscedastic</li>
+</ol>
 <p>Multilevel models are really lots of models tied together.</p>
 <p><em>classic estimate of average for each county</em></p>
 <p>Single county <span class="math inline">\(j\)</span></p>
@@ -295,7 +300,7 @@ MA_i = \beta_0 + \beta_1*SES + \beta_2*I(id=2)... \beta_k*I(id=k)
 <p><span class="math display">\[
 house_i = \alpha_j[i] + \epsilon_i
 \]</span></p>
-<p>Fixed effects assumes homoscedasticity of the error around the counties - county level variances are the same - with this assumption, we can estimate just one error term for the model. Unlike when you model counties in separate regression models - where you have a separate error term for each model and therefore allow the variance within eaxch county to be different (like gls).</p>
+<p>Fixed effects assumes homoscedasticity of the error around the counties - county level variances are the same - with this assumption, we can estimate just one error term for the model. Unlike when you model counties in separate regression models - where you have a separate error term for each model and therefore allow the variance within eaxch county to be different (like GLS).</p>
 <p>Shrink estimates towards a common mean. House <span class="math inline">\(i\)</span> in county <span class="math inline">\(j[i]\)</span>.</p>
 <p><span class="math display">\[
 y_i = \alpha_j[i] + \epsilon_i \\

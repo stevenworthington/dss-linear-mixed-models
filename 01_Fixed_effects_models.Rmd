@@ -19,7 +19,7 @@ MA_i = \beta_0 + \beta_1*SES + \beta_2*I(id=2)... \beta_k*I(id=k)
 $$
 
 School level fixed effects --- allow each school to differ. They will raise or lower the slope of SES depending on the school. The indicators adjust for school-level differences --- called **fixed effects**.
-**This "completely pools" the SES relationship --- it's the same for each school. THIS IS INCORRECT**
+**This "completely pools" the SES relationship --- it's the same for each school. THIS IS INCORRECT --- FIXED EFFECTS RESULT IN NO POOLING**
 
 Drop the intercept when using fixed effects? But this would force SES through the origin, no?
 
@@ -39,7 +39,7 @@ Sorting out the measurement error versus the structure - are the slopes really d
 Inference - separating what is real from what is random.
 
 
-dplyr Data pipeline - data gets handed to the next thing in line, then the output of that gets handed to the next thing in line.
+`dplyr` Data pipeline - data gets handed to the next thing in line, then the output of that gets handed to the next thing in line.
 
 Overdispersion: Dots stacked up. Jitter the dots. Each dot is average of some school. More variance you have across the dots, the more overdispersion you have.
 
@@ -48,7 +48,11 @@ How much modeling flexibility is the right amount? Need a model flexible enough 
 
 ## Lecture 2.1
 
-Aggregation is unsatisfying: 1) underpowered, 2) biased, 3) heteroscedastic.
+Aggregation is unsatisfying:
+
+1. underpowered
+2. biased
+3. heteroscedastic
 
 Multilevel models are really lots of models tied together.
 
@@ -73,7 +77,7 @@ $$
 house_i = \alpha_j[i] + \epsilon_i
 $$
 
-Fixed effects assumes homoscedasticity of the error around the counties - county level variances are the same - with this assumption, we can estimate just one error term for the model. Unlike when you model counties in separate regression models - where you have a separate error term for each model and therefore allow the variance within eaxch county to be different (like gls).
+Fixed effects assumes homoscedasticity of the error around the counties - county level variances are the same - with this assumption, we can estimate just one error term for the model. Unlike when you model counties in separate regression models - where you have a separate error term for each model and therefore allow the variance within eaxch county to be different (like GLS).
 
 Shrink estimates towards a common mean. House $i$ in county $j[i]$.
 

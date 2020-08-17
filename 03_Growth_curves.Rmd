@@ -154,7 +154,7 @@ Number of parameters we are estimating:
 3. 1 residual term: $\epsilon_{ti}$
 
 
-## Lecture 3.2: 
+## Lecture 3.2
 
 **Quadratic Growth Models (Part II)**
 
