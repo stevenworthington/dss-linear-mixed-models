@@ -4,21 +4,21 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Linear Mixed Models</title>
-  <meta name="description" content="Linear Mixed Models" />
+  <title>Lecture 3.2 | Linear Mixed Models</title>
+  <meta name="description" content="Lecture 3.2 | Linear Mixed Models" />
   <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Linear Mixed Models" />
+  <meta property="og:title" content="Lecture 3.2 | Linear Mixed Models" />
   <meta property="og:type" content="book" />
   
   
-  <meta property="og:description" content="Linear Mixed Models" />
+  <meta property="og:description" content="Lecture 3.2 | Linear Mixed Models" />
   <meta name="github-repo" content="stevenworthington/dss-linear-mixed-models" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Linear Mixed Models" />
+  <meta name="twitter:title" content="Lecture 3.2 | Linear Mixed Models" />
   
-  <meta name="twitter:description" content="Linear Mixed Models" />
+  <meta name="twitter:description" content="Lecture 3.2 | Linear Mixed Models" />
   
 
 
@@ -29,8 +29,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-<link rel="next" href="table-of-contents.html"/>
+<link rel="prev" href="lecture-3-2.html"/>
+<link rel="next" href="lecture-3-3.html"/>
 <script src="libs/header-attrs-2.3/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -258,26 +258,51 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">Linear Mixed Models</h1>
-<p class="author"><em></em></p>
-<p class="date"><em>August 2020</em></p>
+<div id="lecture-3.2-1" class="section level2">
+<h2>Lecture 3.2</h2>
+<p><strong>Quadratic Growth Models (Part II)</strong></p>
+<p>R&amp;B Chapter 6 pg 169-176</p>
+<p>Anatomy of a quadratic curve:
+<span class="math display">\[
+y = \pi_{oi} + \pi_{1i}(X - L) + \pi_{2i}(X - L)^2 \\
+L = 19 \\
+X = {18, 19, 20} \\ 
+\pi_{0i} = 1, \pi_{1i} = 2, \pi_{2i} = 0.5
+\]</span>
+Evaluate y at the above Xs and graph it.</p>
+<p>Predict vocabulary for an average / typical child (assuming the random effects and residuals are zero) at X = 20 and X = 12:
+<span class="math display">\[
+\hat{y} = -45.05 + 12.14(20 - 12) + 1.84(20 - 12)^2 \\
+= 170 \\
+\hat{y} = -45.05 + 12.14(12 - 12) + 1.84(12 - 12)^2 \\
+= -45.05
+\]</span></p>
+<p>If the random effects are not normally distributed (the ones from the <code>coef()</code> function in R), then this is evidence of model miss-specification. Probably, there is some omitted variable in the structural part of the model. If the random effects are grouped at the extremes, this may indicate that there’s a missing grouping variable in the fixed effects part of the model.</p>
+<p>Rate of growth at age <span class="math inline">\(a\)</span> for kid <span class="math inline">\(i\)</span> is the derivitive of our curve at age <span class="math inline">\(a\)</span>.</p>
+<div id="model-building" class="section level3">
+<h3>Model Building</h3>
+<p><strong>How can we get a nice simple model given our data?</strong> (Cat lego picture)</p>
+<p>Model refinements:</p>
+<ol style="list-style-type: decimal">
+<li><p>Drop the intercept — no overall intercept or random intercept. We force the regression through the origin, which if we’ve centered the data at <span class="math inline">\(L = 12\)</span> the origin will be 12. So, kids at age 12 will have zero vocabularly. Our residuals only changed a little bit.</p></li>
+<li><p>Set expected rate of growth at age 12 to zero. (i.e., take out the linear fixed effect term, but leave in the linear random effect). Our residuals only changed a little bit.</p></li>
+</ol>
 </div>
-<div id="introduction" class="section level1 unnumbered">
-<h1>Introduction</h1>
-<ul>
-<li>Reports in Rmarkdown: <a href="https://www.stat.cmu.edu/~cshalizi/rmarkdown/" class="uri">https://www.stat.cmu.edu/~cshalizi/rmarkdown/</a></li>
-<li>Math in Rmd: <a href="https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html" class="uri">https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html</a></li>
-<li>Rmd example: <a href="http://www.math.mcgill.ca/yyang/regression/RMarkdown/example.html" class="uri">http://www.math.mcgill.ca/yyang/regression/RMarkdown/example.html</a></li>
-</ul>
+<div id="adding-covariates" class="section level3">
+<h3>Adding covariates</h3>
+<p>Can we explain our acceleration? Is maternal speech predictive of growth?</p>
+<p>Dropping main effects — a design decision:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="lecture-3-2-1.html#cb18-1"></a>M4A<span class="fl">.2</span> &lt;-<span class="st"> </span><span class="kw">lmer</span>(vocab <span class="op">~</span><span class="st"> </span><span class="dv">0</span> <span class="op">+</span><span class="st"> </span>age12sq<span class="op">:</span>sex <span class="op">+</span><span class="st"> </span>age12sq<span class="op">:</span>logmom <span class="op">+</span><span class="st"> </span>(<span class="dv">0</span> <span class="op">+</span><span class="st"> </span>age12 <span class="op">+</span><span class="st"> </span>age12sq <span class="op">|</span><span class="st"> </span>per), <span class="dt">dat =</span> dat.g0)</span></code></pre></div>
+<p>The above model says that mother’s vocabularly will increase the accelation of child’s acquisition of vocabularly. But, that the fixed rate of growth (i.e., linear growth) is fixed at zero.</p>
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-<a href="table-of-contents.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="lecture-3-2.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="lecture-3-3.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -308,7 +333,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/IQSS/dss-linear-mixed-models/edit/master/index.Rmd",
+"link": "https://github.com/IQSS/dss-linear-mixed-models/edit/master/03_Growth_curves.Rmd",
 "text": "Edit"
 },
 "history": {

@@ -4,21 +4,21 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Linear Mixed Models</title>
-  <meta name="description" content="Linear Mixed Models" />
+  <title>Lecture 6.2 | Linear Mixed Models</title>
+  <meta name="description" content="Lecture 6.2 | Linear Mixed Models" />
   <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Linear Mixed Models" />
+  <meta property="og:title" content="Lecture 6.2 | Linear Mixed Models" />
   <meta property="og:type" content="book" />
   
   
-  <meta property="og:description" content="Linear Mixed Models" />
+  <meta property="og:description" content="Lecture 6.2 | Linear Mixed Models" />
   <meta name="github-repo" content="stevenworthington/dss-linear-mixed-models" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Linear Mixed Models" />
+  <meta name="twitter:title" content="Lecture 6.2 | Linear Mixed Models" />
   
-  <meta name="twitter:description" content="Linear Mixed Models" />
+  <meta name="twitter:description" content="Lecture 6.2 | Linear Mixed Models" />
   
 
 
@@ -29,8 +29,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-<link rel="next" href="table-of-contents.html"/>
+<link rel="prev" href="lecture-6-1.html"/>
+<link rel="next" href="lecture-6-3.html"/>
 <script src="libs/header-attrs-2.3/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -258,26 +258,44 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">Linear Mixed Models</h1>
-<p class="author"><em></em></p>
-<p class="date"><em>August 2020</em></p>
-</div>
-<div id="introduction" class="section level1 unnumbered">
-<h1>Introduction</h1>
-<ul>
-<li>Reports in Rmarkdown: <a href="https://www.stat.cmu.edu/~cshalizi/rmarkdown/" class="uri">https://www.stat.cmu.edu/~cshalizi/rmarkdown/</a></li>
-<li>Math in Rmd: <a href="https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html" class="uri">https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html</a></li>
-<li>Rmd example: <a href="http://www.math.mcgill.ca/yyang/regression/RMarkdown/example.html" class="uri">http://www.math.mcgill.ca/yyang/regression/RMarkdown/example.html</a></li>
-</ul>
+<div id="lecture-6.2" class="section level2">
+<h2>Lecture 6.2</h2>
+<p><strong>Cluster Robust Standard Errors</strong></p>
+<p>Building on heteroskedastic robust standard errors (the sandwich estimator) from last lecture…</p>
+<p>Cluster robust standard errors:</p>
+<ol style="list-style-type: decimal">
+<li>We use classic OLS to get <em>population</em> trends.</li>
+<li>Then, if we believe clusters are themselves an independent sample, we can use residuals to get very bad estimates of residual structure for each cluster.</li>
+<li>We then average to get decent overall estimates.</li>
+</ol>
+<p>This is a close sister to the sandwich, sharing the same intuition. All of this is only for the <strong>fixed effects</strong>.</p>
+<p>Big n by n matrix for residuals, which contains bad but unbiased estimates, then average over these to get better estimates. Also, a small p by p matrix for parameters.</p>
+<p>With clustered data, the observations within a cluster are correlated (i.e., the residuals for people within a cluster are similar). So, our residual covariance matrix is <strong>NOT a diagonal matrix</strong>.</p>
+<p>This leads to a block diagonal matrix. So, conditional on the overall trends (i.e., the fixed effects), we get a block diagonal matrix for the residuals.</p>
+<p>Our estimate of <span class="math inline">\(\hat{\beta}\)</span> is going to be the sum of a bunch of <span class="math inline">\(\hat{\beta}\)</span> for each cluster group - because we are essentially fitting separate regressions to each group and then aggregating the coefficients (while weighting them).</p>
+<p>The random intercept model says that the off-diagonals in the VCV matrix are the same, but when using cluster robust standard errors we say that we don’t know what the off-diagonals are.</p>
+<p>When do we get big standard errors on our fixed effects? We get large variances compared to OLS when:</p>
+<ol style="list-style-type: decimal">
+<li>Covariates vary mostly across cluster rather than within cluster (note how a group level covariate only varies cross cluster!).</li>
+<li>Errors within cluster are correlated so the omegas are non-zer (generally positive).</li>
+<li><span class="math inline">\(N_g\)</span> is large (many units inside a cluster).</li>
+<li>Within-cluster regressor and error correlations are the same sign (which is typical).</li>
+</ol>
+<p>Take away messages:</p>
+<ol style="list-style-type: decimal">
+<li>There can be a great loss of efficiency in OLS estimation if errors are correlated within cluster. (“More observations in the cluster doesn’t tell you much that is new”)</li>
+<li>But sometimes these methods give you <em>smaller</em> errors than you would expect</li>
+</ol>
+<p>Rule of thumb — specify the clusters at the highest level. If you don’t, then you’ll be ignore some dependence between your units.</p>
+<p>Bell reading - fixed effects regression with cluster robust standard errors versus MLM.</p>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-<a href="table-of-contents.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="lecture-6-1.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="lecture-6-3.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -308,7 +326,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/IQSS/dss-linear-mixed-models/edit/master/index.Rmd",
+"link": "https://github.com/IQSS/dss-linear-mixed-models/edit/master/06_Sandwich_estimator.Rmd",
 "text": "Edit"
 },
 "history": {

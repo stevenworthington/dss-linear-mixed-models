@@ -4,21 +4,21 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Linear Mixed Models</title>
-  <meta name="description" content="Linear Mixed Models" />
+  <title>Lecture 5.4 | Linear Mixed Models</title>
+  <meta name="description" content="Lecture 5.4 | Linear Mixed Models" />
   <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Linear Mixed Models" />
+  <meta property="og:title" content="Lecture 5.4 | Linear Mixed Models" />
   <meta property="og:type" content="book" />
   
   
-  <meta property="og:description" content="Linear Mixed Models" />
+  <meta property="og:description" content="Lecture 5.4 | Linear Mixed Models" />
   <meta name="github-repo" content="stevenworthington/dss-linear-mixed-models" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Linear Mixed Models" />
+  <meta name="twitter:title" content="Lecture 5.4 | Linear Mixed Models" />
   
-  <meta name="twitter:description" content="Linear Mixed Models" />
+  <meta name="twitter:description" content="Lecture 5.4 | Linear Mixed Models" />
   
 
 
@@ -29,8 +29,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-<link rel="next" href="table-of-contents.html"/>
+<link rel="prev" href="lecture-5-3.html"/>
+<link rel="next" href="sandwich-estimator.html"/>
 <script src="libs/header-attrs-2.3/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -258,26 +258,69 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">Linear Mixed Models</h1>
-<p class="author"><em></em></p>
-<p class="date"><em>August 2020</em></p>
+<div id="lecture-5.4" class="section level2">
+<h2>Lecture 5.4</h2>
+<p><strong>Multilevel Generalized Linear Models</strong></p>
+<p>Reading: Gelman &amp; Hill section 15.1</p>
+<p><strong>Multilevel Poisson — stop and frisk data</strong></p>
+<p>The poisson fixed effects made our comparisons <em>within precinct comparisons</em> (i.e., we asked, in a given place, was there imbalance?). But, we can make precinct a random effect — why? 1) to estimate how much precincts vary, and 2) obtain better estimates of individual precincts via partial pooling (discern which precincts are more or less “active”).</p>
+<p>Multilevel model:</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="lecture-5-4.html#cb35-1"></a>mod18 &lt;-<span class="st"> </span><span class="kw">glmer</span>(stops <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>ethnicity <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>precinct), </span>
+<span id="cb35-2"><a href="lecture-5-4.html#cb35-2"></a>               <span class="dt">offset =</span> <span class="kw">log</span>(past.arrests), </span>
+<span id="cb35-3"><a href="lecture-5-4.html#cb35-3"></a>               <span class="dt">family =</span> <span class="kw">poisson</span>(<span class="dt">link =</span> <span class="st">&quot;log&quot;</span>), </span>
+<span id="cb35-4"><a href="lecture-5-4.html#cb35-4"></a>               <span class="dt">data =</span> stops)</span></code></pre></div>
+<div id="over-dispersion-in-single-level-count-data" class="section level3">
+<h3>Over-dispersion in single-level count data</h3>
+<ol style="list-style-type: decimal">
+<li>quasipoisson</li>
+<li>negative binomial</li>
+<li>add a random effect for each observation (like adding a residual back in). This allows some cases to have more events than expected and some less, given exposure and observed covariates. This works because we can think of the individual cases as, in some sense, multiple observations (the individual counted events).</li>
+</ol>
+<p><span class="math display">\[
+y_i = Poisson(u_ie^{X_i\beta}) \\
+y_i = Poisson(u_ie^{X_i\beta + \epsilon}) \\
+\epsilon \sim N(0, \sigma^2)
+\]</span></p>
+<p>Observation level random effects to account for overdispersion - even in a none multilevel context. This is an alternative to a single level quasipoisson:</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="lecture-5-4.html#cb36-1"></a>mod19 &lt;-<span class="st"> </span><span class="kw">glmer</span>(stops <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>ethnicity <span class="op">+</span><span class="st"> </span>precinct <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>id), </span>
+<span id="cb36-2"><a href="lecture-5-4.html#cb36-2"></a>               <span class="dt">offset =</span> <span class="kw">log</span>(past.arrests), </span>
+<span id="cb36-3"><a href="lecture-5-4.html#cb36-3"></a>               <span class="dt">family =</span> <span class="kw">poisson</span>(<span class="dt">link =</span> <span class="st">&quot;log&quot;</span>), </span>
+<span id="cb36-4"><a href="lecture-5-4.html#cb36-4"></a>               <span class="dt">data =</span> stops)</span></code></pre></div>
 </div>
-<div id="introduction" class="section level1 unnumbered">
-<h1>Introduction</h1>
-<ul>
-<li>Reports in Rmarkdown: <a href="https://www.stat.cmu.edu/~cshalizi/rmarkdown/" class="uri">https://www.stat.cmu.edu/~cshalizi/rmarkdown/</a></li>
-<li>Math in Rmd: <a href="https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html" class="uri">https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html</a></li>
-<li>Rmd example: <a href="http://www.math.mcgill.ca/yyang/regression/RMarkdown/example.html" class="uri">http://www.math.mcgill.ca/yyang/regression/RMarkdown/example.html</a></li>
-</ul>
+<div id="over-dispersion-in-multi-level-count-data" class="section level3">
+<h3>Over-dispersion in multi-level count data</h3>
+<p>Full multilevel model accounting for overdispersion. The uncertainty estimates (standard errors) will increase in size:</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="lecture-5-4.html#cb37-1"></a>mod20 &lt;-<span class="st"> </span><span class="kw">glmer</span>(stops <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>ethnicity <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>precinct) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>id), </span>
+<span id="cb37-2"><a href="lecture-5-4.html#cb37-2"></a>               <span class="dt">offset =</span> <span class="kw">log</span>(past.arrests), </span>
+<span id="cb37-3"><a href="lecture-5-4.html#cb37-3"></a>               <span class="dt">family =</span> <span class="kw">poisson</span>(<span class="dt">link =</span> <span class="st">&quot;log&quot;</span>), </span>
+<span id="cb37-4"><a href="lecture-5-4.html#cb37-4"></a>               <span class="dt">data =</span> stops)</span></code></pre></div>
 </div>
+<div id="subgroup-analysis" class="section level3">
+<h3>Subgroup analysis</h3>
+<p>Two options:</p>
+<ol style="list-style-type: decimal">
+<li>Divide data up into groups (results in completely unpooled estimates for each subgroup)</li>
+<li>Full modeling (include interactions for the subgroups)</li>
+</ol>
+</div>
+<div id="model-sensitivity-checks" class="section level3">
+<h3>Model sensitivity checks</h3>
+<ol style="list-style-type: decimal">
+<li>Did our results depend of how we divided precincts?</li>
+<li>How much would things change if we tweaked our analysis?</li>
+</ol>
+<p>We don’t want to think that our findings are the result of our estimation strategy, but rather reflect the underlying data.</p>
+
+</div>
+</div>
+<!-- </div> -->
             </section>
 
           </div>
         </div>
       </div>
-
-<a href="table-of-contents.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="lecture-5-3.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="sandwich-estimator.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -308,7 +351,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/IQSS/dss-linear-mixed-models/edit/master/index.Rmd",
+"link": "https://github.com/IQSS/dss-linear-mixed-models/edit/master/05_Generalized_linear_models.Rmd",
 "text": "Edit"
 },
 "history": {

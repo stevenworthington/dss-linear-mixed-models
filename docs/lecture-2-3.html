@@ -4,21 +4,21 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Linear Mixed Models</title>
-  <meta name="description" content="Linear Mixed Models" />
+  <title>Lecture 2.3 | Linear Mixed Models</title>
+  <meta name="description" content="Lecture 2.3 | Linear Mixed Models" />
   <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Linear Mixed Models" />
+  <meta property="og:title" content="Lecture 2.3 | Linear Mixed Models" />
   <meta property="og:type" content="book" />
   
   
-  <meta property="og:description" content="Linear Mixed Models" />
+  <meta property="og:description" content="Lecture 2.3 | Linear Mixed Models" />
   <meta name="github-repo" content="stevenworthington/dss-linear-mixed-models" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Linear Mixed Models" />
+  <meta name="twitter:title" content="Lecture 2.3 | Linear Mixed Models" />
   
-  <meta name="twitter:description" content="Linear Mixed Models" />
+  <meta name="twitter:description" content="Lecture 2.3 | Linear Mixed Models" />
   
 
 
@@ -29,8 +29,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-<link rel="next" href="table-of-contents.html"/>
+<link rel="prev" href="mixed-effects-models.html"/>
+<link rel="next" href="lecture-2-4.html"/>
 <script src="libs/header-attrs-2.3/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -258,26 +258,137 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">Linear Mixed Models</h1>
-<p class="author"><em></em></p>
-<p class="date"><em>August 2020</em></p>
-</div>
-<div id="introduction" class="section level1 unnumbered">
-<h1>Introduction</h1>
-<ul>
-<li>Reports in Rmarkdown: <a href="https://www.stat.cmu.edu/~cshalizi/rmarkdown/" class="uri">https://www.stat.cmu.edu/~cshalizi/rmarkdown/</a></li>
-<li>Math in Rmd: <a href="https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html" class="uri">https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html</a></li>
-<li>Rmd example: <a href="http://www.math.mcgill.ca/yyang/regression/RMarkdown/example.html" class="uri">http://www.math.mcgill.ca/yyang/regression/RMarkdown/example.html</a></li>
-</ul>
+<div id="lecture-2.3" class="section level2">
+<h2>Lecture 2.3</h2>
+<ol style="list-style-type: decimal">
+<li>gender gap and math achievement</li>
+</ol>
+<p>Two level notation
+<span class="math display">\[
+math_{ij} = \beta_{0j} + \beta_1*female_{ij} + \epsilon_{ij} \\  
+\beta_{0j} = \mu + U_{0j}                                         
+\]</span>
+where <span class="math inline">\(\epsilon \sim N(0, \sigma^2)\)</span> and <span class="math inline">\(U_{0j} \sim N(0, \sigma^2)\)</span></p>
+<p>Single level notation
+<span class="math display">\[
+math_{ij} = \mu + \beta1*female_{ij} + U_{0j} + \epsilon_{ij}   
+\]</span>
+where <span class="math inline">\(U_{0j}\)</span> is the random intercept.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="lecture-2-3.html#cb4-1"></a>mod1 &lt;-<span class="st"> </span><span class="kw">lmer</span>(math <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>female <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>id), <span class="dt">data =</span> hsb)</span>
+<span id="cb4-2"><a href="lecture-2-3.html#cb4-2"></a><span class="kw">summary</span>(mod1)</span></code></pre></div>
+<pre><code>## Linear mixed model fit by REML [&#39;lmerMod&#39;]
+## Formula: math ~ 1 + female + (1 | id)
+##    Data: hsb
+## 
+## REML criterion at convergence: 47056
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -3.1956 -0.7506  0.0379  0.7704  2.6211 
+## 
+## Random effects:
+##  Groups   Name        Variance Std.Dev.
+##  id       (Intercept)  8.169   2.858   
+##  Residual             38.850   6.233   
+## Number of obs: 7185, groups:  id, 160
+## 
+## Fixed effects:
+##             Estimate Std. Error t value
+## (Intercept)  13.3449     0.2547  52.400
+## female       -1.3590     0.1714  -7.927
+## 
+## Correlation of Fixed Effects:
+##        (Intr)
+## female -0.350</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="lecture-2-3.html#cb6-1"></a><span class="co"># Intercept is \mu, \beta_1 is female, 1 in parentheses is the random intercept (U_{0j})</span></span></code></pre></div>
+<p>Extend to Catholic schools (sector variable):</p>
+<p>Two level notation
+<span class="math display">\[
+math_{ij} = \beta_{0j} + \beta_1*female_{ij} + \epsilon_{ij} \\     %% level 1, where \epsilon \sim N(0, \sigma^2)
+\beta_{0j} =  \mu + U_{0j} + \gamma_{01}*sector_j  \\               %% level 2, where U_{0j} \sim N(0, \sigma^2)
+\beta_{1j} = \gamma_{10} + \gamma_{11}*sector_j                     %% level 2, add sector at level 2
+\]</span></p>
+<p>First subscript tells us which beta, Second subscript tells us which which piece inside the equation - so sequentially from 0 to n for each term.</p>
+<p>Single level notation
+<span class="math display">\[
+math_{ij} = \beta_{0j} + \beta_1*female_{ij} + \epsilon_{ij} \\    %% level 1
+  = (\gamma_{00} + \gamma_{01}*sector_j + U_{0j}) + (\gamma_{10} + \gamma_{11}*sector_j) + female_j + \epsilon_{ij} \\
+  = \gamma_{00} + \gamma_{01}*sector_j + U_{0j} + \gamma_{10}*female + \gamma_{11}*sectorFemale_j + \epsilon_{ij}  
+\]</span></p>
+<p>The coefficient for the interaction is <span class="math inline">\(\gamma_{11}\)</span>.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="lecture-2-3.html#cb7-1"></a>mod2 &lt;-<span class="st"> </span><span class="kw">lmer</span>(math <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>sector <span class="op">+</span><span class="st"> </span>female <span class="op">+</span><span class="st"> </span>sector <span class="op">:</span><span class="st"> </span>female <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>id ), <span class="dt">data =</span> hsb)</span>
+<span id="cb7-2"><a href="lecture-2-3.html#cb7-2"></a><span class="kw">summary</span>(mod2)</span></code></pre></div>
+<pre><code>## Linear mixed model fit by REML [&#39;lmerMod&#39;]
+## Formula: math ~ 1 + sector + female + sector:female + (1 | id)
+##    Data: hsb
+## 
+## REML criterion at convergence: 47017.2
+## 
+## Scaled residuals: 
+##      Min       1Q   Median       3Q      Max 
+## -3.15363 -0.75077  0.03403  0.76707  2.61443 
+## 
+## Random effects:
+##  Groups   Name        Variance Std.Dev.
+##  id       (Intercept)  6.286   2.507   
+##  Residual             38.849   6.233   
+## Number of obs: 7185, groups:  id, 160
+## 
+## Fixed effects:
+##                       Estimate Std. Error t value
+## (Intercept)            12.1714     0.3056  39.831
+## sectorcatholic          2.6177     0.4667   5.608
+## female                 -1.4818     0.2092  -7.085
+## sectorcatholic:female   0.3338     0.3618   0.922
+## 
+## Correlation of Fixed Effects:
+##             (Intr) sctrct female
+## sectorcthlc -0.655              
+## female      -0.360  0.235       
+## sctrcthlc:f  0.208 -0.402 -0.578</code></pre>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="lecture-2-3.html#cb9-1"></a><span class="co"># Intercept is \mu, \beta_1 is female, 1 in parentheses is the random intercept (U_{0j})</span></span></code></pre></div>
+<p>Covary - having an unusual intercept can be predictive of having an unsual slope - knowing one tells you about the other.
+Intercepts and slopes can covary - pulled from a multivariate normal distribution. Intercept and slope are tied together.</p>
+<p>Covariance = correlation on scale of original variables
+Correlation = unitless</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="lecture-2-3.html#cb10-1"></a>mod3 &lt;-<span class="st"> </span><span class="kw">lmer</span>(math <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>ses <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>ses <span class="op">|</span><span class="st"> </span>id ), <span class="dt">data =</span> hsb)</span>
+<span id="cb10-2"><a href="lecture-2-3.html#cb10-2"></a><span class="kw">summary</span>(mod3)</span></code></pre></div>
+<pre><code>## Linear mixed model fit by REML [&#39;lmerMod&#39;]
+## Formula: math ~ 1 + ses + (1 + ses | id)
+##    Data: hsb
+## 
+## REML criterion at convergence: 46640.4
+## 
+## Scaled residuals: 
+##      Min       1Q   Median       3Q      Max 
+## -3.12272 -0.73046  0.02144  0.75610  2.94356 
+## 
+## Random effects:
+##  Groups   Name        Variance Std.Dev. Corr 
+##  id       (Intercept)  4.8287  2.1974        
+##           ses          0.4129  0.6426   -0.11
+##  Residual             36.8301  6.0688        
+## Number of obs: 7185, groups:  id, 160
+## 
+## Fixed effects:
+##             Estimate Std. Error t value
+## (Intercept)  12.6650     0.1898   66.71
+## ses           2.3938     0.1181   20.27
+## 
+## Correlation of Fixed Effects:
+##     (Intr)
+## ses -0.045</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="lecture-2-3.html#cb12-1"></a><span class="co"># random intercept and slope for ses</span></span>
+<span id="cb12-2"><a href="lecture-2-3.html#cb12-2"></a><span class="co"># to get covariance, you can multiply the correlation between intercept and slope with the intercept variance and then the slope variance</span></span></code></pre></div>
+<p>Empirical Bayes estimates over-shrink. They provide too much pooling. Can simulate from the model to mitigate this. So, generate random schools from the model to simulate more accurately the variation.</p>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-<a href="table-of-contents.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="mixed-effects-models.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="lecture-2-4.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -308,7 +419,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/IQSS/dss-linear-mixed-models/edit/master/index.Rmd",
+"link": "https://github.com/IQSS/dss-linear-mixed-models/edit/master/02_Mixed_effects_models.Rmd",
 "text": "Edit"
 },
 "history": {

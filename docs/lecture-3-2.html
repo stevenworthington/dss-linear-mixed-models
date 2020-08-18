@@ -4,21 +4,21 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Linear Mixed Models</title>
-  <meta name="description" content="Linear Mixed Models" />
+  <title>Lecture 3.2 | Linear Mixed Models</title>
+  <meta name="description" content="Lecture 3.2 | Linear Mixed Models" />
   <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Linear Mixed Models" />
+  <meta property="og:title" content="Lecture 3.2 | Linear Mixed Models" />
   <meta property="og:type" content="book" />
   
   
-  <meta property="og:description" content="Linear Mixed Models" />
+  <meta property="og:description" content="Lecture 3.2 | Linear Mixed Models" />
   <meta name="github-repo" content="stevenworthington/dss-linear-mixed-models" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Linear Mixed Models" />
+  <meta name="twitter:title" content="Lecture 3.2 | Linear Mixed Models" />
   
-  <meta name="twitter:description" content="Linear Mixed Models" />
+  <meta name="twitter:description" content="Lecture 3.2 | Linear Mixed Models" />
   
 
 
@@ -29,8 +29,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-<link rel="next" href="table-of-contents.html"/>
+<link rel="prev" href="lecture-3-1.html"/>
+<link rel="next" href="lecture-3-2-1.html"/>
 <script src="libs/header-attrs-2.3/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -258,26 +258,132 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">Linear Mixed Models</h1>
-<p class="author"><em></em></p>
-<p class="date"><em>August 2020</em></p>
+<div id="lecture-3.2" class="section level2">
+<h2>Lecture 3.2</h2>
+<p><strong>Quadratic Growth Models (Part I)</strong></p>
+<p><strong>Questions to ask</strong>:
+1. <strong>Is there variation?</strong> — are these children different from each other?
+2. <strong>What explains this variation?</strong> — what variables explain why children are different from one another?</p>
+<p><strong>3 random effects per student:</strong>
+1. Random intercept (<span class="math inline">\(\pi_{0i}\)</span>)
+2. Random slope (<span class="math inline">\(\pi_{1i}\)</span>)
+3. Random acceleration /curvature (growth) (<span class="math inline">\(\pi_{2i}\)</span>)</p>
+<p>Data is structured like this:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">ID</th>
+<th align="center"><span class="math inline">\(\alpha\)</span></th>
+<th align="center"><span class="math inline">\(\gamma\)</span></th>
+<th align="left">Home Language</th>
+<th align="left">HRS</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">101</td>
+<td align="center"><span class="math inline">\(\alpha_{1, 101}\)</span> 0</td>
+<td align="center">-0.5</td>
+<td align="left">0</td>
+<td align="left">80</td>
+</tr>
+<tr class="even">
+<td align="left">101</td>
+<td align="center"><span class="math inline">\(\alpha_{2, 101}\)</span> 4</td>
+<td align="center">0.2</td>
+<td align="left">0</td>
+<td align="left">80</td>
+</tr>
+<tr class="odd">
+<td align="left">101</td>
+<td align="center"><span class="math inline">\(\alpha_{3, 101}\)</span> 5</td>
+<td align="center">0.4</td>
+<td align="left">0</td>
+<td align="left">80</td>
+</tr>
+<tr class="even">
+<td align="left">101</td>
+<td align="center"><span class="math inline">\(\alpha_{4, 101}\)</span> 8</td>
+<td align="center">0.7</td>
+<td align="left">0</td>
+<td align="left">80</td>
+</tr>
+<tr class="odd">
+<td align="left">208</td>
+<td align="center"><span class="math inline">\(\alpha_{1, 208}\)</span></td>
+<td align="center">-0.8</td>
+<td align="left">1</td>
+<td align="left">80</td>
+</tr>
+</tbody>
+</table>
+<p>First column after ID is time.</p>
+<p>Two level notation: (here, <span class="math inline">\(a\)</span> is age - a level one predictor)
+<span class="math display">\[
+Y_{ti} = \pi_{0i} + \pi_{1i}a_{ti} + \epsilon_{ti} \\
+\epsilon_{ti} \sim N(0, \sigma^2) \\
+\pi_{0i} = \beta_{00} + \beta_{01}X_i + r_{0i} \\
+\pi_{1i} = \beta_{10} + \beta_{11}X_i + r_{1i} \\
+(r_{0i}, r_{1i}) \sim N(\bf{0}, \Sigma)
+\]</span></p>
+<p>Single level notation:
+<span class="math display">\[
+Y_{ti} = \pi_{0i} + \pi_{1i}a_{ti} + \epsilon_{ti} \\
+= (\beta_{00} + \beta_{01}X_i + r_{0i}) + (\beta_{10} + \beta_{11}X_i + r_{1i}) + a_{ti} + \epsilon_{ti} \\
+= \beta_{00} + \beta_{01}X_i + r_{0i} + \beta_{10}a_{ti} + \beta_{11}X_i\alpha_{ti} + r_{1i}a_{ti} + \epsilon_{ti} \\
+= \beta_{00} + \beta_{01}X_i + \beta_{10}a_{ti} + \beta_{11}X_ia_{ti} + (r_{0i} + r_{1i}a_{ti} + \epsilon_{ti})
+\]</span>
+The random effects in the parentheses on the final line can be thought of as residuals.</p>
+<p>Prediction:
+<span class="math display">\[
+X_i = 2, a_{ti} = 5 \\
+\beta_{00} + \beta_{01}2 + \beta_{10}5 + \beta_{11}2.5
+\]</span></p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="lecture-3-2.html#cb17-1"></a>mod7 &lt;-<span class="st"> </span><span class="kw">lmer</span>(Y <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>age <span class="op">*</span><span class="st"> </span>(language <span class="op">+</span><span class="st"> </span>hours) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>age <span class="op">|</span><span class="st"> </span>StudentID), <span class="dt">data =</span> dat)</span></code></pre></div>
+<p>When using growth models, we may not care about level 1. Level 2 is where we get at the question of growth. Here, <span class="math inline">\(t\)</span> is the observation number.</p>
+<p><span class="math display">\[
+Y_{ti} = \pi_{0i} + \pi_{1i}a_{ti} + \epsilon_{ti} \\
+\epsilon_{ti} \sim N(0, \sigma^2) \\
+\pi_{0i} = \beta_{00} + \beta_{01}LANG_i + \beta_{02}HRS_i + r_{0i} \\
+\pi_{1i} = \beta_{10} + \beta_{11}LANG_i + \beta_{12}HRS_i + r_{1i} \\
+(r_{0i}, r_{1i}) \sim N(\bf{0}, \Sigma)
+\]</span></p>
+<p>When looking at growth rates over time, a small growth rate difference can mean a lot, since the difference in growth rate gets compounded over time. It’s best to get some predictions for each kid over the full length of time, then compare.</p>
+<div id="quadratic-growth-rb-chapter-6" class="section level3">
+<h3>Quadratic growth (R&amp;B chapter 6)</h3>
+<p><strong>Research question</strong>: Describe the association between maternal speech and child’s vocabulary.</p>
+<p>Very important to pick where the intercept is for growth models — need to mean center. L is an important centering decision - in this case, L = 12 months (that’s the intercept). But, may be better to put L within the bounds of the observed data.</p>
+<ol style="list-style-type: decimal">
+<li><span class="math inline">\(\pi_{0i}\)</span> = status at L</li>
+<li><span class="math inline">\(\pi_{1i}\)</span> = instantaneous (average) growth at L</li>
+<li><span class="math inline">\(\pi_{2i}\)</span> = curvature / acceleration</li>
+</ol>
+<p>Unconditional Quadratic Growth Model:
+<span class="math display">\[
+Y_{ti} = \pi_{0i} + \pi_{1i}(a_{ti} - L) + \pi_{2i}(a_{ti} - L)^2 + \epsilon_{ti} \\
+\epsilon_{ti} \sim N(0, \sigma^2) \\
+\pi_{0i} = \gamma_{00} + u_{0i} \\
+\pi_{1i} = \gamma_{01} + u_{1i} \\
+\pi_{2i} = \gamma_{02} + u_{2i} \\
+(u_{0i}, u_{1i}, u_{2i}) \sim N(\bf{0}, \Sigma)
+\]</span>
+Three random effects — <em>all correlated</em>. We have a fixed centering constant <span class="math inline">\(L\)</span> (this is a constant chosen by you, not a parameter).</p>
+<p>Anything with an <span class="math inline">\(i\)</span> subscript is for an individual student. Anything without a subscript is a fixed effect — this is the shared structual component of the model.</p>
+<p>Number of parameters we are estimating:</p>
+<ol style="list-style-type: decimal">
+<li>3 fixed effects: <span class="math inline">\(\gamma_{00}, \gamma_{01}, \gamma_{02}\)</span></li>
+<li>6 random effects: the diagonals of the matrix: <span class="math inline">\(\tau_{00}, \tau_{11}, \tau_{22}\)</span>. next are the covariances: <span class="math inline">\(\tau_{01}, \tau_{02}, \tau_{12}\)</span></li>
+<li>1 residual term: <span class="math inline">\(\epsilon_{ti}\)</span></li>
+</ol>
 </div>
-<div id="introduction" class="section level1 unnumbered">
-<h1>Introduction</h1>
-<ul>
-<li>Reports in Rmarkdown: <a href="https://www.stat.cmu.edu/~cshalizi/rmarkdown/" class="uri">https://www.stat.cmu.edu/~cshalizi/rmarkdown/</a></li>
-<li>Math in Rmd: <a href="https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html" class="uri">https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html</a></li>
-<li>Rmd example: <a href="http://www.math.mcgill.ca/yyang/regression/RMarkdown/example.html" class="uri">http://www.math.mcgill.ca/yyang/regression/RMarkdown/example.html</a></li>
-</ul>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-<a href="table-of-contents.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="lecture-3-1.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="lecture-3-2-1.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -308,7 +414,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/IQSS/dss-linear-mixed-models/edit/master/index.Rmd",
+"link": "https://github.com/IQSS/dss-linear-mixed-models/edit/master/03_Growth_curves.Rmd",
 "text": "Edit"
 },
 "history": {

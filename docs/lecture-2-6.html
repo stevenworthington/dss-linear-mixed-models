@@ -4,21 +4,21 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Linear Mixed Models</title>
-  <meta name="description" content="Linear Mixed Models" />
+  <title>Lecture 2.6 | Linear Mixed Models</title>
+  <meta name="description" content="Lecture 2.6 | Linear Mixed Models" />
   <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Linear Mixed Models" />
+  <meta property="og:title" content="Lecture 2.6 | Linear Mixed Models" />
   <meta property="og:type" content="book" />
   
   
-  <meta property="og:description" content="Linear Mixed Models" />
+  <meta property="og:description" content="Lecture 2.6 | Linear Mixed Models" />
   <meta name="github-repo" content="stevenworthington/dss-linear-mixed-models" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Linear Mixed Models" />
+  <meta name="twitter:title" content="Lecture 2.6 | Linear Mixed Models" />
   
-  <meta name="twitter:description" content="Linear Mixed Models" />
+  <meta name="twitter:description" content="Lecture 2.6 | Linear Mixed Models" />
   
 
 
@@ -29,8 +29,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-<link rel="next" href="table-of-contents.html"/>
+<link rel="prev" href="lecture-2-5.html"/>
+<link rel="next" href="growth-curves.html"/>
 <script src="libs/header-attrs-2.3/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -258,26 +258,90 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">Linear Mixed Models</h1>
-<p class="author"><em></em></p>
-<p class="date"><em>August 2020</em></p>
+<div id="lecture-2.6" class="section level2">
+<h2>Lecture 2.6</h2>
+<p><strong>Inference for MLMs</strong></p>
+<p>We get 3 things from MLMs:</p>
+<ol style="list-style-type: decimal">
+<li>fixed effects</li>
+<li>variance and covariance parameters (<span class="math inline">\(\tau\)</span>) - variances and covariances of the hyperparameters</li>
+<li>With empirical Bayes as a <em>second step</em>, estimated random effects for each group (not the variances, but the actual estimates for each group). Inference for these estimates is very shaky - generally don’t do it.</li>
+</ol>
+<p>Second level predictors modify intercepts or slopes. If they modify slopes, then that is an interaction with the first level predictor associated with that slope - it moderates the slope of the first level predictor.</p>
+<p>See Chapter 4 in BR book.</p>
+<div id="confidence-intervals" class="section level3">
+<h3>confidence intervals</h3>
+<p><strong>normal approximation</strong>:</p>
+<p><span class="math display">\[
+\sqrt{n} \left( \hat{\beta} - \beta \right) \rightarrow N(0, \tau^2) \\
+SE = \frac{\tau}{\sqrt{n}}
+\]</span>
+As sample size grows, the estimated parameters will be normally distributed about the true parameters, and the variance will shrink with the sample size towards an estimable value.</p>
+<p>If the sampling distribution is relatively symmetric and bell-shaped, a 95% confidence interval can be estimated using:</p>
+<p><span class="math display">\[
+statistic \pm 2 \times \widehat{SE}
+\]</span></p>
+<p>Confidence intervals don’t tell you whether you’re right or wrong for a given project, but rather how often you’ll be right over time.</p>
+<p>Normal approximation assumes that we know <span class="math inline">\(\tau\)</span>, but we don’t, we estimate it.</p>
+<p><strong>variance covariance estimates</strong>:</p>
+<p>Uncertainty estimnates are hard to get and are generally unreliable. But, we can test whether the estimates are different from zero. There are no standard errors for variance parameters - because standard errors only really make sense if the distribution is the estimator is more or less symmetric. But, for variance parameters, the distribution is skewed (bounded at zero). This boundary distorts normality.</p>
+<p><strong>profile likelihood confidence intervals</strong>:</p>
+<p>Basically asks, “what is likely if we let other parameters fit as best they can?”. Lays down a number line and sets grid points, then iterates over the grid and determines which values on the grid are believable.</p>
 </div>
-<div id="introduction" class="section level1 unnumbered">
-<h1>Introduction</h1>
+<div id="inference" class="section level3">
+<h3>Inference</h3>
+<p>Compare your data to what you would have gotten were your hull hypothesis true (i.e., compare what we have to what we should have had).</p>
 <ul>
-<li>Reports in Rmarkdown: <a href="https://www.stat.cmu.edu/~cshalizi/rmarkdown/" class="uri">https://www.stat.cmu.edu/~cshalizi/rmarkdown/</a></li>
-<li>Math in Rmd: <a href="https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html" class="uri">https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html</a></li>
-<li>Rmd example: <a href="http://www.math.mcgill.ca/yyang/regression/RMarkdown/example.html" class="uri">http://www.math.mcgill.ca/yyang/regression/RMarkdown/example.html</a></li>
+<li>Likelihood ratio tests
+<ul>
+<li>best</li>
+</ul></li>
+<li>Wald tests
+<ul>
+<li>good, but not good for variance parameters with skewed distributions</li>
+</ul></li>
+<li>ANOVA / F tests</li>
+<li>score tests</li>
 </ul>
+<p><strong>P-values</strong>: Gelman “There are no zeros in social science”.</p>
+<p><strong>Wald test (t-test)</strong>:</p>
+<p><span class="math display">\[
+t = \frac{\hat{\beta} - \beta_{hyp}}{\widehat{se}(\hat{\beta})}
+\]</span>
+The chance of reaching your “extreme value” <span class="math inline">\(t\)</span> by chance if the null hypothesis is correct.</p>
+<p>A problem with t-tests - degrees of freedom.</p>
+<p><span class="math display">\[
+H_0 : \gamma_{10} = 0
+\]</span>
+where:</p>
+<p><span class="math display">\[
+\beta_{1j} = \gamma_{10} + u_{1j}
+\]</span>
+The above null should be extended to include a test of whether the random effects variance for <span class="math inline">\(u_{1j}\)</span> is also zero - in other words, no variance around the fixed effect of zero.</p>
+<p>By hand:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="lecture-2-6.html#cb16-1"></a><span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw">pnorm</span>(t, <span class="dt">lower.tail =</span> <span class="ot">FALSE</span>)</span></code></pre></div>
+<p>The number of degrees of freedom tells you which parameters were harder or easier to estimate given the clustered nature of the data. Group mean centering can increase degrees of freedom.</p>
+<p><strong>Likelihood ratio test</strong>:</p>
+<p>if the likelihoods are basically the same, we accept the null. If the <em>constrained</em> model fits like crap, then we reject the null. To test, we compare the ratio of likelihoods.</p>
+<p>Basic idea: if <span class="math inline">\(\gamma_{00}\)</span> is actually 0, then omitting it from the model shouldn’t make much difference.</p>
+<p><span class="math display">\[
+D = -2log \frac{L(\textrm{simple model})}{L(\textrm{complex model})}
+\]</span>
+The likelihood ratio statistic has a <span class="math inline">\(\chi^2\)</span> distribution:</p>
+<p><span class="math display">\[
+D \sim \chi^2
+\]</span></p>
+
 </div>
+</div>
+<!-- </div> -->
             </section>
 
           </div>
         </div>
       </div>
-
-<a href="table-of-contents.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="lecture-2-5.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="growth-curves.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -308,7 +372,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/IQSS/dss-linear-mixed-models/edit/master/index.Rmd",
+"link": "https://github.com/IQSS/dss-linear-mixed-models/edit/master/02_Mixed_effects_models.Rmd",
 "text": "Edit"
 },
 "history": {

@@ -4,21 +4,21 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Linear Mixed Models</title>
-  <meta name="description" content="Linear Mixed Models" />
+  <title>Lecture 2.5 | Linear Mixed Models</title>
+  <meta name="description" content="Lecture 2.5 | Linear Mixed Models" />
   <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Linear Mixed Models" />
+  <meta property="og:title" content="Lecture 2.5 | Linear Mixed Models" />
   <meta property="og:type" content="book" />
   
   
-  <meta property="og:description" content="Linear Mixed Models" />
+  <meta property="og:description" content="Lecture 2.5 | Linear Mixed Models" />
   <meta name="github-repo" content="stevenworthington/dss-linear-mixed-models" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Linear Mixed Models" />
+  <meta name="twitter:title" content="Lecture 2.5 | Linear Mixed Models" />
   
-  <meta name="twitter:description" content="Linear Mixed Models" />
+  <meta name="twitter:description" content="Lecture 2.5 | Linear Mixed Models" />
   
 
 
@@ -29,8 +29,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-<link rel="next" href="table-of-contents.html"/>
+<link rel="prev" href="lecture-2-4.html"/>
+<link rel="next" href="lecture-2-6.html"/>
 <script src="libs/header-attrs-2.3/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -258,26 +258,47 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">Linear Mixed Models</h1>
-<p class="author"><em></em></p>
-<p class="date"><em>August 2020</em></p>
+<div id="lecture-2.5" class="section level2">
+<h2>Lecture 2.5</h2>
+<div id="part-i-within-versus-between-centering" class="section level3">
+<h3>Part I: within versus between centering</h3>
+<p>Dataset - birthweight and smoking (Swedish dataset). Level 1 - babies. Level 2 - mother. Can do between mother comparisons and within mother comparisons. Think about regression as a form of matching. Between mother confounders will be time invariant, while within mother confounders will be time variant. Why did the mother smoke for one pregnancy but not the other? Do we have a variable that identifies the reason? Like was she large and sedantary, then became a marathon runner. Cannot do age to age within comparisons - same mother giving birth at age 20 cannot be compaared to her later self giving birth at age 40 - this would need to be between mother. Though you could use age-adjusted birthweights for within comparisons.</p>
+<p>Estimating between: aggregate data to group level, then regress average birthweight onto the averages of the predictors. A kind of dose-response model. Averaging works for linear models.</p>
+<p>Estimating within: take out between variation and then regress - this is fixed effects regression. Alternative - within-group recentering (subtract mother-level means from outcomes?? and all covariates - see RH&amp;S pg 145).</p>
+<p>Estimating both with a MLM: We can allow for different within and between effects. So for birth <span class="math inline">\(i\)</span> of mother <span class="math inline">\(j\)</span>:</p>
+<p><span class="math display">\[
+y_{ij} = \beta_1 + B^W(S_{ij} - \bar{S}_{.j}) + \beta^B\bar{S}_{.j} + \xi_j + \epsilon_{ij}
+\]</span>
+with <span class="math inline">\(S_{ij}\)</span> smoking status and <span class="math inline">\(\bar{S}_j\)</span> average smoking status for mother <span class="math inline">\(j\)</span>. Here the notation is that <span class="math inline">\(\gamma_0\)</span> is <span class="math inline">\(\beta_1\)</span> (the fixed effects intercept) and <span class="math inline">\(u_j\)</span> is <span class="math inline">\(\xi_j\)</span> (the random effect residual - random deviations for the <span class="math inline">\(j\)</span> groups from the fixed effects intecept). <span class="math inline">\(\beta_1 = 3238gms\)</span>, <span class="math inline">\(\beta^W = -105\)</span>, <span class="math inline">\(\beta^B = 183\)</span>.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="lecture-2-5.html#cb15-1"></a>dat &lt;-<span class="st"> </span>dat <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(mid) <span class="op">%&gt;%</span></span>
+<span id="cb15-2"><a href="lecture-2-5.html#cb15-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">smokem =</span> <span class="kw">mean</span>(smoke),</span>
+<span id="cb15-3"><a href="lecture-2-5.html#cb15-3"></a>         <span class="dt">smokec =</span> smoke <span class="op">-</span><span class="st"> </span>smokem)</span>
+<span id="cb15-4"><a href="lecture-2-5.html#cb15-4"></a></span>
+<span id="cb15-5"><a href="lecture-2-5.html#cb15-5"></a>mod5 &lt;-<span class="st"> </span><span class="kw">lmer</span>(birthweight <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>smokec <span class="op">+</span><span class="st"> </span>smokem <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>mid), <span class="dt">data =</span> dat)</span></code></pre></div>
+<p>Deviations from cluster means are automatically uncorrlelated with the group means - solution to one of the model assuptions (this is the hybrid model).</p>
+<p>Now the same model with the HSB data:
+<span class="math display">\[
+y_{ij} = \beta_{0j} + \beta_wSES_{ij} + \beta_b\bar{SES}_j + \epsilon_{ij} \\
+\beta_{ij} = \gamma_0 + u_{0j}
+\]</span>
+Within coef estimates slope inside the school. Between coef estimates how the averages of the school relate to the outcome. <strong>Contextual effect:</strong> The expected difference in outcomes from being in school 2 versus school 1 (but with the same SES) - in R&amp;B pg 140. The between effect is basically the contextual effect plus the within effect. If you group mean center the within variable, then the between variable becomes and estimate of the contextual effect - is this right?</p>
 </div>
-<div id="introduction" class="section level1 unnumbered">
-<h1>Introduction</h1>
-<ul>
-<li>Reports in Rmarkdown: <a href="https://www.stat.cmu.edu/~cshalizi/rmarkdown/" class="uri">https://www.stat.cmu.edu/~cshalizi/rmarkdown/</a></li>
-<li>Math in Rmd: <a href="https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html" class="uri">https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html</a></li>
-<li>Rmd example: <a href="http://www.math.mcgill.ca/yyang/regression/RMarkdown/example.html" class="uri">http://www.math.mcgill.ca/yyang/regression/RMarkdown/example.html</a></li>
-</ul>
+<div id="part-ii-concept-of-maximum-likelihood" class="section level3">
+<h3>Part II: Concept of maximum likelihood</h3>
+<ol style="list-style-type: decimal">
+<li>The <strong>model</strong>: a description or recipe of how the data might have come to be (a data generating process). The model tells us what predictions are possible.</li>
+<li>The <strong>parameters</strong>: numbers that makes this general recipe more specific.</li>
+</ol>
+<p>What parameters of this model make your data more <strong>likely</strong>?</p>
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-<a href="table-of-contents.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="lecture-2-4.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="lecture-2-6.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -308,7 +329,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/IQSS/dss-linear-mixed-models/edit/master/index.Rmd",
+"link": "https://github.com/IQSS/dss-linear-mixed-models/edit/master/02_Mixed_effects_models.Rmd",
 "text": "Edit"
 },
 "history": {

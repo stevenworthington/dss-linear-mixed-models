@@ -4,21 +4,21 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Linear Mixed Models</title>
-  <meta name="description" content="Linear Mixed Models" />
+  <title>Lecture 4.1 | Linear Mixed Models</title>
+  <meta name="description" content="Lecture 4.1 | Linear Mixed Models" />
   <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Linear Mixed Models" />
+  <meta property="og:title" content="Lecture 4.1 | Linear Mixed Models" />
   <meta property="og:type" content="book" />
   
   
-  <meta property="og:description" content="Linear Mixed Models" />
+  <meta property="og:description" content="Lecture 4.1 | Linear Mixed Models" />
   <meta name="github-repo" content="stevenworthington/dss-linear-mixed-models" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Linear Mixed Models" />
+  <meta name="twitter:title" content="Lecture 4.1 | Linear Mixed Models" />
   
-  <meta name="twitter:description" content="Linear Mixed Models" />
+  <meta name="twitter:description" content="Lecture 4.1 | Linear Mixed Models" />
   
 
 
@@ -29,8 +29,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-<link rel="next" href="table-of-contents.html"/>
+<link rel="prev" href="many-level-models.html"/>
+<link rel="next" href="lecture-4-2-a.html"/>
 <script src="libs/header-attrs-2.3/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -258,26 +258,96 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">Linear Mixed Models</h1>
-<p class="author"><em></em></p>
-<p class="date"><em>August 2020</em></p>
+<div id="lecture-4.1" class="section level2">
+<h2>Lecture 4.1</h2>
+<p><strong>Many level models (&gt;3 levels)</strong></p>
+<p>Case study: student growth for student nested in schools — READS data. Student level predictors, but students are within schools.</p>
+<p><strong>Research questions:</strong></p>
+<ol style="list-style-type: decimal">
+<li>Do students at different schools grow at different rates, on average?</li>
+<li>Do students identified at English learners language learners grow at different rates than other students, and does that vary by school? (this requires a student-level predictor)</li>
+<li>Do students at high poverty schools have systematically different rates of growth than students at low poverty schools (this requires a school-level predictor).</li>
+</ol>
+<p>Three-level model:
+<span class="math display">\[
+read_{ijt} = \pi_{0ij} + \pi_{1ij}time_{ijt} + \color{darkgreen}{\epsilon_{ijt}} \\
+\color{darkgreen}{\epsilon_{ijt}} \sim N(0, \sigma^2) \\
+\pi_{0ij} = \beta_{00j} + \color{darkgreen}{u_{0ij}} \\
+\pi_{1ij} = \beta_{10j} + \color{darkgreen}{u_{1ij}} \\
+\beta_{00j} = \color{darkred}{\gamma_{000}} + \color{darkgreen}{r_{00j}} \\
+\beta_{10j} = \color{darkred}{\gamma_{100}} + \color{darkgreen}{r_{10j}} \\
+(u_{0ij}, u_{1ij}) \sim N(\bf{0}, \Sigma) \\
+(r_{00j}, r_{10j}) \sim N(\bf{0}, \tau)
+\]</span>
+Outcome deoends on level 1 things, then how level 2 things depend on level 1 things, then how level 3 things depend on level 2 things. (last two lines of equation above are not correct)</p>
+<p><span class="math inline">\(\beta\)</span> is about specific schools (level 2), while <span class="math inline">\(\gamma\)</span> is across the whole population (level 3).</p>
+<p>R syntax:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="lecture-4-1.html#cb22-1"></a>mod11 &lt;-<span class="st"> </span><span class="kw">lmer</span>(read <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>time <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>time <span class="op">|</span><span class="st"> </span>id) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>time <span class="op">|</span><span class="st"> </span>schid), <span class="dt">data =</span> dat)</span>
+<span id="cb22-2"><a href="lecture-4-1.html#cb22-2"></a><span class="co">## same as</span></span>
+<span id="cb22-3"><a href="lecture-4-1.html#cb22-3"></a>mod11 &lt;-<span class="st"> </span><span class="kw">lmer</span>(read <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>time <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>time <span class="op">|</span><span class="st"> </span>id<span class="op">/</span>schid), <span class="dt">data =</span> dat)</span>
+<span id="cb22-4"><a href="lecture-4-1.html#cb22-4"></a><span class="co">## same as</span></span>
+<span id="cb22-5"><a href="lecture-4-1.html#cb22-5"></a>mod11 &lt;-<span class="st"> </span><span class="kw">lmer</span>(read <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>time <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>time <span class="op">|</span><span class="st"> </span>id<span class="op">:</span>schid) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>time <span class="op">|</span><span class="st"> </span>schid), <span class="dt">data =</span> dat)</span></code></pre></div>
+<p>Reduced form (substitute the <span class="math inline">\(\pi\)</span>’s):
+<span class="math display">\[
+Y_{ijt} = \pi_{0ij} + \pi_{1ij}time_{ijt} + \epsilon_{ijt}  \\ 
+= (\beta_{00j} + u_{0ij}) + (\beta_{10j} + u_{1ij})time_{ijt} + \epsilon_{ijt} \\
+= \beta_{00j} + \beta_{10j}time_{ijt} + u_{0ij} + u_{1ij} \epsilon_{ijt} \\
+= (\gamma_{000} + r_{00j}) + (\gamma_{100} + r_{10j}) + u_{0ij} + u_{1ij} time_{ijt} + \epsilon_{ijt} \\
+= \color{darkred}{\gamma_{000} + \gamma_{100}time_{ijt}} + \color{darkgreen}{r_{00j} + r_{10j}time_{ijt} + u_{0ij} + u_{1ij}time_{ijt} + \epsilon_{ijt}} 
+\]</span>
+Offset due to schools are the <span class="math inline">\(r\)</span>’s. Offset due to students are the <span class="math inline">\(u\)</span>’s. The <span class="math inline">\(\epsilon_{ijt}\)</span> is the same sort of error as in single-level OLS (i.e., measurement error). The random effect ‘stack’ on top of each other. Fixed effect population averages are in <span class="math inline">\(\color{darkred}{darkred}\)</span>, while residuals are in <span class="math inline">\(\color{darkgreen}{darkgreen}\)</span>. You could have the higher level (level 3 here) be fixed effects only — so if you only had 5 schools, this could be a 2-level mixed model for students over time with fixed effects for school.</p>
+<div id="level-2-covariates" class="section level3">
+<h3>Level 2 covariates</h3>
+<p>Including student ELL status (time-invariant) in the two-level form:
+<span class="math display">\[
+read_{ijt} = \pi_{0ij} + \pi_{1ij}time_{ijt} + \color{darkgreen}{\epsilon_{ijt}} \\
+\color{darkgreen}{\epsilon_{ijt}} \sim N(0, \sigma^2) \\
+\pi_{0ij} = \beta_{00j} + \beta_{01j}ELL_{ij} + \color{darkgreen}{u_{0ij}} \\
+\pi_{1ij} = \beta_{10j} + \beta_{11j}ELL_{ij} + \color{darkgreen}{u_{1ij}} \\
+\color{grey}{\textrm{average school reading score:}} \quad \beta_{00j} = \color{darkred}{\gamma_{000}} + \color{darkgreen}{r_{00j}} \\ 
+\color{grey}{\textrm{school-specific ELL initial gap:}} \quad \beta_{01j} = \color{darkred}{\gamma_{010}} + \color{darkgreen}{r_{01j}} \\ 
+\color{grey}{\textrm{school avarge growth rate:}} \quad \beta_{10j} = \color{darkred}{\gamma_{100}} + \color{darkgreen}{r_{10j}} \\ 
+\color{grey}{\textrm{school specific ELL/non-ELL growth rate:}} \quad \beta_{11j} = \color{darkred}{\gamma_{110}} + \color{darkgreen}{r_{11j}} \\ 
+\]</span>
+We have four 3rd-level equations. We now have a <span class="math inline">\(4 \times 4\)</span> matrix for the random effects.</p>
+<p>Reduced form:
+<span class="math display">\[
+read_{ijt}= \color{darkred}{\gamma_{000} + \gamma_{010}ELL_{ij} + \gamma_{100}time_{ijt} + \gamma_{110}ELL_{ij}time_{ijt}} + \color{darkgreen}{r_{00j} + r_{01j}ELL_{ij} + r_{10j}time_{ijt} + r_{11j}time_{ijt}ELL_{ij} + u_{0ij} + u_{1ij}time_{ijt} + \epsilon_{ijt}} 
+\]</span></p>
+<p>R model syntax:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="lecture-4-1.html#cb23-1"></a>mod11 &lt;-<span class="st"> </span><span class="kw">lmer</span>(read <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>time <span class="op">*</span><span class="st"> </span>ell <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>time <span class="op">|</span><span class="st"> </span>id) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>time <span class="op">*</span><span class="st"> </span>ell <span class="op">|</span><span class="st"> </span>schid), <span class="dt">data =</span> dat)</span></code></pre></div>
 </div>
-<div id="introduction" class="section level1 unnumbered">
-<h1>Introduction</h1>
-<ul>
-<li>Reports in Rmarkdown: <a href="https://www.stat.cmu.edu/~cshalizi/rmarkdown/" class="uri">https://www.stat.cmu.edu/~cshalizi/rmarkdown/</a></li>
-<li>Math in Rmd: <a href="https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html" class="uri">https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html</a></li>
-<li>Rmd example: <a href="http://www.math.mcgill.ca/yyang/regression/RMarkdown/example.html" class="uri">http://www.math.mcgill.ca/yyang/regression/RMarkdown/example.html</a></li>
-</ul>
+<div id="level-3-covariates" class="section level3">
+<h3>Level 3 covariates</h3>
+<p><strong>How does poverty interact with growth (school level)</strong></p>
+<p>Including school poverty variable in the two-level form:</p>
+<p>SEE PHOTO!!!! the below equation is not correct, just the same as above.
+<span class="math display">\[
+read_{ijt} = \pi_{0ij} + \pi_{1ij}time_{ijt} + \color{darkgreen}{\epsilon_{ijt}} \\
+\color{darkgreen}{\epsilon_{ijt}} \sim N(0, \sigma^2) \\
+\pi_{0ij} = \beta_{00j} + \beta_{01j}ELL_{ij} + \color{darkgreen}{u_{0ij}} \\
+\pi_{1ij} = \beta_{10j} + \beta_{11j}ELL_{ij} + \color{darkgreen}{u_{1ij}} \\
+\color{grey}{\textrm{average school reading score:}} \quad \beta_{00j} = \color{darkred}{\gamma_{000}} + \color{darkgreen}{r_{00j}} \\ 
+\color{grey}{\textrm{school-specific ELL initial gap:}} \quad \beta_{01j} = \color{darkred}{\gamma_{010}} + \color{darkgreen}{r_{01j}} \\ 
+\color{grey}{\textrm{school avarge growth rate:}} \quad \beta_{10j} = \color{darkred}{\gamma_{100}} + \color{darkgreen}{r_{10j}} \\ 
+\color{grey}{\textrm{school specific ELL/non-ELL growth rate:}} \quad \beta_{11j} = \color{darkred}{\gamma_{110}} + \color{darkgreen}{r_{11j}} \\ 
+\]</span></p>
+<p>R model syntax (with 3-way interaction):</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="lecture-4-1.html#cb24-1"></a>mod12 &lt;-<span class="st"> </span><span class="kw">lmer</span>(read <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>time <span class="op">*</span><span class="st"> </span>ell <span class="op">*</span><span class="st"> </span>poverty_school <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>time <span class="op">|</span><span class="st"> </span>id) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>time <span class="op">*</span><span class="st"> </span>ell <span class="op">|</span><span class="st"> </span>schid), <span class="dt">data =</span> dat)</span></code></pre></div>
+<p>Split initial ability (intercepts) and growth rate (time) equations:</p>
+<p><span class="math display">\[
+read_{ijt} = (\gamma_{000} + \gamma_{010}ELL_{ij} + \gamma_{001}Poverty_{j} + \gamma_{011}ELL_{ij}Poverty_{j}) + \\
+            (\gamma_{100} + \gamma_{110}ELL_{ij} + \gamma_{101}Poverty + \gamma_{111}ELL_{ij}Poverty_{j}) * time_{ijt}
+\]</span></p>
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-<a href="table-of-contents.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="many-level-models.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="lecture-4-2-a.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -308,7 +378,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/IQSS/dss-linear-mixed-models/edit/master/index.Rmd",
+"link": "https://github.com/IQSS/dss-linear-mixed-models/edit/master/04_Many_level_models.Rmd",
 "text": "Edit"
 },
 "history": {

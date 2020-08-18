@@ -4,21 +4,21 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Linear Mixed Models</title>
-  <meta name="description" content="Linear Mixed Models" />
+  <title>Lecture 3.1 | Linear Mixed Models</title>
+  <meta name="description" content="Lecture 3.1 | Linear Mixed Models" />
   <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Linear Mixed Models" />
+  <meta property="og:title" content="Lecture 3.1 | Linear Mixed Models" />
   <meta property="og:type" content="book" />
   
   
-  <meta property="og:description" content="Linear Mixed Models" />
+  <meta property="og:description" content="Lecture 3.1 | Linear Mixed Models" />
   <meta name="github-repo" content="stevenworthington/dss-linear-mixed-models" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Linear Mixed Models" />
+  <meta name="twitter:title" content="Lecture 3.1 | Linear Mixed Models" />
   
-  <meta name="twitter:description" content="Linear Mixed Models" />
+  <meta name="twitter:description" content="Lecture 3.1 | Linear Mixed Models" />
   
 
 
@@ -29,8 +29,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-<link rel="next" href="table-of-contents.html"/>
+<link rel="prev" href="growth-curves.html"/>
+<link rel="next" href="lecture-3-2.html"/>
 <script src="libs/header-attrs-2.3/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -258,26 +258,44 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">Linear Mixed Models</h1>
-<p class="author"><em></em></p>
-<p class="date"><em>August 2020</em></p>
+<div id="lecture-3.1" class="section level2">
+<h2>Lecture 3.1</h2>
+<p>Individuals are <strong>level 2</strong>, time is <strong>level 1</strong>. Observations about individuals that do not change are level 2, while observations about individuals that do change are level 1. Essentially, individuals are sampled, and then time points within individuals are sampled (not they’re not really sampled).</p>
+<ol style="list-style-type: decimal">
+<li><p>Clustered data: we observed a bunch of students in a school. The students have <strong>no order</strong>. They are independent within the school.</p></li>
+<li><p>Longitudinal data: we observe a bunch of times. The times are <strong>ordered</strong>. They are not independent within the student. This ordering of observations is meaningful. So, time points closer to each other are more correlated with each other.</p></li>
+</ol>
+<p>Visualizations important with longitudinal data. <strong>Always look at your individuals</strong> by plotting their outcome data over time.</p>
+<p><strong>Marginal model:</strong> summary / average accross all individuals.</p>
+<p>Read Willet and Singer book chapters.</p>
+<p><strong>Panel studies:</strong> track everyone at the same sequence of time points. Timepoints are called “waves”.</p>
+<p><strong>Cohort studies:</strong> follow a group. But, check-in times can be variable.</p>
+<p><strong>Balance:</strong> For panel data, when there is an observation for each person at each time point.</p>
+<div id="growth-curves-1" class="section level3">
+<h3>Growth curves</h3>
+<p>R&amp;B pg 164</p>
+<p>For each child, they have initial knowledge <span class="math inline">\(\pi_{0i}\)</span> and rate of increase <span class="math inline">\(\pi_{1i}\)</span>. Make the intercept meaningful - at onset of preschool or something.</p>
+<p>R&amp;B pg 163-164
+Classic random slope model:</p>
+<p><span class="math display">\[
+Y_{ti} = \pi_{0i} + \pi_{1i}\alpha_{ti} + \epsilon_{ti} \\
+\epsilon_{ti} \sim N(0, \sigma^2) \\
+\pi_{0i} = \beta_{00} + r_{0i} \\
+\pi_{1i} = \beta_{10} + r_{1i} \\
+(r_{0i}, r_{1i}) \sim N(\bf{0}, \Sigma)
+\]</span>
+Fixed effects: <span class="math inline">\(\beta_{00}\)</span>, <span class="math inline">\(\beta_{10}\)</span></p>
+<p>Variance components: <span class="math inline">\(\sigma^2\)</span>, <span class="math inline">\(\tau_{00}\)</span>, <span class="math inline">\(\tau_{11}\)</span>, <span class="math inline">\(\tau_{10}\)</span></p>
+<p>Betas are now parameters at <strong>level 2</strong> because we added in another level below individuals.</p>
 </div>
-<div id="introduction" class="section level1 unnumbered">
-<h1>Introduction</h1>
-<ul>
-<li>Reports in Rmarkdown: <a href="https://www.stat.cmu.edu/~cshalizi/rmarkdown/" class="uri">https://www.stat.cmu.edu/~cshalizi/rmarkdown/</a></li>
-<li>Math in Rmd: <a href="https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html" class="uri">https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html</a></li>
-<li>Rmd example: <a href="http://www.math.mcgill.ca/yyang/regression/RMarkdown/example.html" class="uri">http://www.math.mcgill.ca/yyang/regression/RMarkdown/example.html</a></li>
-</ul>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-<a href="table-of-contents.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="growth-curves.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="lecture-3-2.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -308,7 +326,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/IQSS/dss-linear-mixed-models/edit/master/index.Rmd",
+"link": "https://github.com/IQSS/dss-linear-mixed-models/edit/master/03_Growth_curves.Rmd",
 "text": "Edit"
 },
 "history": {

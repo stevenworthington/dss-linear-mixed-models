@@ -4,21 +4,21 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Linear Mixed Models</title>
-  <meta name="description" content="Linear Mixed Models" />
+  <title>Lecture 2.1 | Linear Mixed Models</title>
+  <meta name="description" content="Lecture 2.1 | Linear Mixed Models" />
   <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Linear Mixed Models" />
+  <meta property="og:title" content="Lecture 2.1 | Linear Mixed Models" />
   <meta property="og:type" content="book" />
   
   
-  <meta property="og:description" content="Linear Mixed Models" />
+  <meta property="og:description" content="Lecture 2.1 | Linear Mixed Models" />
   <meta name="github-repo" content="stevenworthington/dss-linear-mixed-models" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Linear Mixed Models" />
+  <meta name="twitter:title" content="Lecture 2.1 | Linear Mixed Models" />
   
-  <meta name="twitter:description" content="Linear Mixed Models" />
+  <meta name="twitter:description" content="Lecture 2.1 | Linear Mixed Models" />
   
 
 
@@ -29,8 +29,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-<link rel="next" href="table-of-contents.html"/>
+<link rel="prev" href="lecture-1-2.html"/>
+<link rel="next" href="mixed-effects-models.html"/>
 <script src="libs/header-attrs-2.3/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -258,26 +258,54 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">Linear Mixed Models</h1>
-<p class="author"><em></em></p>
-<p class="date"><em>August 2020</em></p>
+<div id="lecture-2.1" class="section level2">
+<h2>Lecture 2.1</h2>
+<p>Aggregation is unsatisfying:</p>
+<ol style="list-style-type: decimal">
+<li>underpowered</li>
+<li>biased</li>
+<li>heteroscedastic</li>
+</ol>
+<p>Multilevel models are really lots of models tied together.</p>
+<p><em>classic estimate of average for each county</em></p>
+<p>Single county <span class="math inline">\(j\)</span></p>
+<p><span class="math inline">\(n_j\)</span> houses</p>
+<p><span class="math inline">\(Y_{ij}, Y_ni\)</span> -&gt; <span class="math inline">\(stdev(Y_i... Y_nj) = S_j\)</span></p>
+<p>-&gt; <span class="math inline">\(\hat{Y}_j\)</span></p>
+<p>-&gt; <span class="math inline">\(\hat{SE} = \frac{S_j}{sqrt(n_j)}\)</span></p>
+<div id="fixed-effects-regression" class="section level3">
+<h3>Fixed effects regression</h3>
+<p>Take average value of radon for each county then add value for each house - this is fixed effects regression.</p>
+<p><span class="math display">\[
+house_i = \alpha_j[i] + \epsilon_i
+\]</span></p>
+<p>Fixed effects assumes homoscedasticity of the error around the counties - county level variances are the same - with this assumption, we can estimate just one error term for the model. Unlike when you model counties in separate regression models - where you have a separate error term for each model and therefore allow the variance within eaxch county to be different (like GLS).</p>
+<p>Shrink estimates towards a common mean. House <span class="math inline">\(i\)</span> in county <span class="math inline">\(j[i]\)</span>.</p>
+<p><span class="math display">\[
+y_i = \alpha_j[i] + \epsilon_i \\
+\epsilon_i ~ N(0, \sigma^2_\alpha) \\
+\alpha_j ~ N(\mu, \sigma^2_\alpha) %% &quot;soft constraint&quot;: this ties the intercepts together
+\]</span></p>
+<p><span class="math inline">\(\alpha_j\)</span> are the county means. <span class="math inline">\(\mu\)</span> is the grand mean of the county means (NOT the same as the mean of all the houses). <span class="math inline">\(\sigma^2_\alpha\)</span> is the variance of the county means.</p>
+<p>Shrinkage - a weighted average of the mean for the county and the grand mean of the counties.
+Shrinkage = empirical Bayes estimate. Tend to be underdispersed, compared to the overdispered fixed effects estimates.</p>
+<p>Bias-variance trade off - can introduce some bias into the estimates in return for removing a lot of variance. This will result in better estimates overall.</p>
 </div>
-<div id="introduction" class="section level1 unnumbered">
-<h1>Introduction</h1>
-<ul>
-<li>Reports in Rmarkdown: <a href="https://www.stat.cmu.edu/~cshalizi/rmarkdown/" class="uri">https://www.stat.cmu.edu/~cshalizi/rmarkdown/</a></li>
-<li>Math in Rmd: <a href="https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html" class="uri">https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html</a></li>
-<li>Rmd example: <a href="http://www.math.mcgill.ca/yyang/regression/RMarkdown/example.html" class="uri">http://www.math.mcgill.ca/yyang/regression/RMarkdown/example.html</a></li>
-</ul>
+<div id="level-1-predictors" class="section level3">
+<h3>Level 1 predictors</h3>
+<p>Basement floor indicator.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="lecture-2-1.html#cb3-1"></a><span class="kw">coef</span>(model)<span class="op">$</span>county <span class="co"># get the empirical Bayes estimates for each county</span></span></code></pre></div>
+
 </div>
+</div>
+<!-- </div> -->
             </section>
 
           </div>
         </div>
       </div>
-
-<a href="table-of-contents.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="lecture-1-2.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="mixed-effects-models.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -308,7 +336,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/IQSS/dss-linear-mixed-models/edit/master/index.Rmd",
+"link": "https://github.com/IQSS/dss-linear-mixed-models/edit/master/01_Fixed_effects_models.Rmd",
 "text": "Edit"
 },
 "history": {

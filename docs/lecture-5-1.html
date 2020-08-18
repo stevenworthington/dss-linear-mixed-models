@@ -4,21 +4,21 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Linear Mixed Models</title>
-  <meta name="description" content="Linear Mixed Models" />
+  <title>Lecture 5.1 | Linear Mixed Models</title>
+  <meta name="description" content="Lecture 5.1 | Linear Mixed Models" />
   <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Linear Mixed Models" />
+  <meta property="og:title" content="Lecture 5.1 | Linear Mixed Models" />
   <meta property="og:type" content="book" />
   
   
-  <meta property="og:description" content="Linear Mixed Models" />
+  <meta property="og:description" content="Lecture 5.1 | Linear Mixed Models" />
   <meta name="github-repo" content="stevenworthington/dss-linear-mixed-models" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Linear Mixed Models" />
+  <meta name="twitter:title" content="Lecture 5.1 | Linear Mixed Models" />
   
-  <meta name="twitter:description" content="Linear Mixed Models" />
+  <meta name="twitter:description" content="Lecture 5.1 | Linear Mixed Models" />
   
 
 
@@ -29,8 +29,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-<link rel="next" href="table-of-contents.html"/>
+<link rel="prev" href="generalized-linear-models.html"/>
+<link rel="next" href="lecture-5-2.html"/>
 <script src="libs/header-attrs-2.3/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -258,26 +258,104 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">Linear Mixed Models</h1>
-<p class="author"><em></em></p>
-<p class="date"><em>August 2020</em></p>
+<div id="lecture-5.1" class="section level2">
+<h2>Lecture 5.1</h2>
+<p><strong>Generalized Linear Models</strong></p>
+<div id="poisson-models" class="section level3">
+<h3>Poisson models</h3>
+<p><strong>Case study:</strong> police stops by ethnic groups. Is the rate of police stops higher or lower for certain groups and precincts than we would predict given amount of crime. Variables are: police prencint, ethnicity, number of past arrests, number of stop and frisk events, and population. The unit of analysis is the police precinct level over a certain period of time.</p>
+<p><strong>Estimation strategy:</strong></p>
+<ol style="list-style-type: decimal">
+<li>We can watch any given precinct</li>
+<li>The number of stops are <em>count data</em></li>
+<li>Goal: is the number of stops relatively larger given crime levels?</li>
+</ol>
+<p>Want to estimate the <strong>rate</strong>: the numbner of stop and frisk per unit time.
+<span class="math display">\[
+Y_i \sim Poisson(\theta_i)
+\]</span>
+For each unit, at any given moment, the chance of seeing an event is the same as at any other moment. This chance is the <strong>rate</strong> we’re trying to estimate.</p>
+<p>The <strong>rate</strong> is the expected number of observations per unit time. With high rates (&gt;= 15), you can probably get away with a Gaussian model, though this would be a model with additive effects (unless the response is logged), rather than the multiplicative effects provided my Poisson models.</p>
+<p>The mean and variance in Poisson are tied together. Poisson distributions are indexed by a single <em>parameter</em> <span class="math inline">\(\theta\)</span>.</p>
+<p>We model the connection between our observed outcome and a rate parameter:
+<span class="math display">\[
+Y_i \sim Poisson(\theta_i)
+\]</span>
+And then we model our rate parameter as a function of our covariates:
+<span class="math display">\[
+\theta_i = exp(\eta) \\
+\color{grey}{\textrm{The linear predictor:}} \quad \eta = X_i\beta
+\]</span></p>
+<p>Say we have:
+<span class="math display">\[
+Y_i = Poisson(exp(2.8 + 0.012X_{i1} - 0.20X_{i2}))
+\]</span>
+<span class="math display">\[
+\theta_i = exp(2.8 + 0.012X_{i1} - 0.20X_{i2}) \\
+= e^{2.8} \times e^{0.012X_{i1}} \times e^{-0.20X_{i2}} \\
+\color{grey}{\textrm{Impact of inductrial zone is a scaling on average (rate):}} \quad e^{-0.20\times1} = 0.82
+\]</span>
+Need to exponentiate the coefficents before interpreting them as multiplicative effects.</p>
+<p><strong>Exposure</strong> <span class="math inline">\(u_i\)</span> is multplied by rate:
+<span class="math display">\[
+Y_i \sim Poisson(u_i\theta_i)
+\]</span>
+<strong>Offset</strong>: like a covariate where the coefficient is fixed at one:
+<span class="math display">\[
+\hat{Y_i} = u_i\theta_i = u_i exp(X_i\beta) = exp(log(u_i)) \times exp(X_i\beta) = exp[log(u_i) + X_i\beta] \\
+\color{grey}{\textrm{The offset:}} \quad log(u_i)
+\]</span></p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="lecture-5-1.html#cb26-1"></a>mod13 &lt;-<span class="st"> </span><span class="kw">glm</span>(stops <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">family =</span> <span class="kw">poisson</span>(<span class="dt">link =</span> <span class="st">&quot;log&quot;</span>), <span class="dt">offset =</span> <span class="kw">log</span>(past.arrests), <span class="dt">data =</span> stops)</span></code></pre></div>
+<p>The number of stops, on average, per unit time (so, about half of one stop per unit time).
+<span class="math display">\[
+e^{-0.59} = 0.55
+\]</span></p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="lecture-5-1.html#cb27-1"></a>mod13 &lt;-<span class="st"> </span><span class="kw">glm</span>(stops <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>ethnicity, <span class="dt">family =</span> <span class="kw">poisson</span>(<span class="dt">link =</span> <span class="st">&quot;log&quot;</span>), <span class="dt">offset =</span> <span class="kw">log</span>(past.arrests), <span class="dt">data =</span> stops)</span></code></pre></div>
+<p><span class="math display">\[
+stops_i = Poisson(u_i\theta_i) \\
+\theta_i = exp[ \beta_0 + \beta_1Hispanic_i + \beta_2White_i + log(u_i)]
+\]</span>
+where <span class="math inline">\(log(u_i)\)</span> is the log of prior arrests.</p>
+<p>Model fitting. Compare difference in likelihoods:
+<span class="math display">\[
+D \sim \chi^2_m \\
+E[D] = m
+\]</span></p>
+<p>Add precinct (this is basically a fixed effects model):</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="lecture-5-1.html#cb28-1"></a>mod13 &lt;-<span class="st"> </span><span class="kw">glm</span>(stops <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>ethnicity <span class="op">+</span><span class="st"> </span>precinct, <span class="dt">family =</span> <span class="kw">poisson</span>(<span class="dt">link =</span> <span class="st">&quot;log&quot;</span>), <span class="dt">offset =</span> <span class="kw">log</span>(past.arrests), <span class="dt">data =</span> stops)</span></code></pre></div>
+<p><strong>Overdispersion</strong></p>
+<p>The poisson model says <strong>variance depends on rate</strong>. Can use <strong>standardized residuals</strong> to detect overdispersion. Only 5% of standardized residuals should be outside of <span class="math inline">\(\pm 2\)</span> — if there is more than that, then there is overdispersion.</p>
+<p>Simulation:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="lecture-5-1.html#cb29-1"></a>N &lt;-<span class="st"> </span><span class="dv">200</span></span>
+<span id="cb29-2"><a href="lecture-5-1.html#cb29-2"></a>X &lt;-<span class="st"> </span><span class="kw">log</span>(<span class="kw">runif</span>(N, <span class="fl">0.1</span>, <span class="dv">3</span>))</span>
+<span id="cb29-3"><a href="lecture-5-1.html#cb29-3"></a>exposure &lt;-<span class="st"> </span><span class="kw">runif</span>(N, <span class="fl">0.5</span>, <span class="dv">2</span>)</span>
+<span id="cb29-4"><a href="lecture-5-1.html#cb29-4"></a>rate &lt;-<span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span>X</span>
+<span id="cb29-5"><a href="lecture-5-1.html#cb29-5"></a>Y &lt;-<span class="st"> </span><span class="kw">rpois</span>(N, <span class="dt">lambda =</span> exposure <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>(rate))</span>
+<span id="cb29-6"><a href="lecture-5-1.html#cb29-6"></a>  </span>
+<span id="cb29-7"><a href="lecture-5-1.html#cb29-7"></a>mod14 &lt;-<span class="st"> </span><span class="kw">glm</span>(Y <span class="op">~</span><span class="st"> </span>X, <span class="dt">family =</span> poisson, <span class="dt">offset =</span> <span class="kw">log</span>(exposure), <span class="dt">data =</span> df)  </span>
+<span id="cb29-8"><a href="lecture-5-1.html#cb29-8"></a>yhat &lt;-<span class="st"> </span><span class="kw">predict</span>(mod14, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb29-9"><a href="lecture-5-1.html#cb29-9"></a>z &lt;-<span class="st"> </span>(yhat <span class="op">/</span><span class="st"> </span>?) <span class="co">### ??????</span></span>
+<span id="cb29-10"><a href="lecture-5-1.html#cb29-10"></a><span class="kw">plot</span>()</span></code></pre></div>
+<p>So, we ask whether our standardized residuals are <strong>standard normal</strong>. Poisson model has its own heteroscasticity built it, but there can be more heteroscasticity than it can deal with.</p>
+<p>Can fix overdispersion using an overdispered Poisson model: a <em>quasipoisson</em> or <em>negative binomial</em> model. These both have extra parameters to allow extra scatter around what you fit.</p>
 </div>
-<div id="introduction" class="section level1 unnumbered">
-<h1>Introduction</h1>
-<ul>
-<li>Reports in Rmarkdown: <a href="https://www.stat.cmu.edu/~cshalizi/rmarkdown/" class="uri">https://www.stat.cmu.edu/~cshalizi/rmarkdown/</a></li>
-<li>Math in Rmd: <a href="https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html" class="uri">https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html</a></li>
-<li>Rmd example: <a href="http://www.math.mcgill.ca/yyang/regression/RMarkdown/example.html" class="uri">http://www.math.mcgill.ca/yyang/regression/RMarkdown/example.html</a></li>
-</ul>
+<div id="anatomy-of-a-generalized-linear-model" class="section level3">
+<h3>Anatomy of a Generalized Linear Model</h3>
+<ol style="list-style-type: decimal">
+<li>Data</li>
+<li>Predictor matrix</li>
+<li>Linear predictor</li>
+<li>Link function</li>
+</ol>
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-<a href="table-of-contents.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="generalized-linear-models.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="lecture-5-2.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -308,7 +386,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/IQSS/dss-linear-mixed-models/edit/master/index.Rmd",
+"link": "https://github.com/IQSS/dss-linear-mixed-models/edit/master/05_Generalized_linear_models.Rmd",
 "text": "Edit"
 },
 "history": {

@@ -4,21 +4,21 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Linear Mixed Models</title>
-  <meta name="description" content="Linear Mixed Models" />
+  <title>Lecture 5.2 | Linear Mixed Models</title>
+  <meta name="description" content="Lecture 5.2 | Linear Mixed Models" />
   <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Linear Mixed Models" />
+  <meta property="og:title" content="Lecture 5.2 | Linear Mixed Models" />
   <meta property="og:type" content="book" />
   
   
-  <meta property="og:description" content="Linear Mixed Models" />
+  <meta property="og:description" content="Lecture 5.2 | Linear Mixed Models" />
   <meta name="github-repo" content="stevenworthington/dss-linear-mixed-models" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Linear Mixed Models" />
+  <meta name="twitter:title" content="Lecture 5.2 | Linear Mixed Models" />
   
-  <meta name="twitter:description" content="Linear Mixed Models" />
+  <meta name="twitter:description" content="Lecture 5.2 | Linear Mixed Models" />
   
 
 
@@ -29,8 +29,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-<link rel="next" href="table-of-contents.html"/>
+<link rel="prev" href="lecture-5-1.html"/>
+<link rel="next" href="lecture-5-3.html"/>
 <script src="libs/header-attrs-2.3/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -258,26 +258,63 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">Linear Mixed Models</h1>
-<p class="author"><em></em></p>
-<p class="date"><em>August 2020</em></p>
-</div>
-<div id="introduction" class="section level1 unnumbered">
-<h1>Introduction</h1>
+<div id="lecture-5.2" class="section level2">
+<h2>Lecture 5.2</h2>
+<p><strong>Multilevel Logistic Regression</strong></p>
+<p>R&amp;B Ch. 10</p>
+<p><strong>Thailand Retention Data</strong>: students are in schools and are either retained (held back) or not.</p>
+<p><span class="math display">\[
+Y_{ij} \sim F(\mu_{ij}, \upsilon) \\
+E[Y_{ij}] = \mu_{ij}
+\]</span>
+<span class="math display">\[
+\eta_{ij} = g(\mu_{ij}) \quad \textrm{with} \quad Y_{ij} \sim F(\mu_{ij}, \upsilon)
+\]</span>
+where <span class="math inline">\(eta_{ij}\)</span> is the linear predictor.</p>
+<p><span class="math display">\[
+\eta_{ij} = \beta_{0j} + \beta_{1j}X_{1ij} + \beta_{2j}X_{2ij}
+\]</span>
+Note the lack of the residual term - that’s extra randomness that happens outside of this equation of the structural component of the model.</p>
+<p><span class="math display">\[
+\eta_{ij} = \beta_{0j} + \beta_{1j}X_{1ij} + \beta_{2j}X_{2ij} \\
+p_{ij} = logit^{-1}(\eta_{ij})
+\]</span></p>
+<p>Take out the random slopes for simplicity (the <span class="math inline">\(j\)</span> subscripts on the <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_2\)</span>), so this is a random intercept model.
+<span class="math display">\[
+\eta_{ij} = \beta_{0j} + \beta_{1}X_{1ij} + \beta_{2}X_{2ij}
+\]</span></p>
+<p>Level 2 is still a <strong>vanilla linear model</strong>, because we’re modeling the level-1 coefficients, which are continuous:
+<span class="math display">\[
+\beta_{qj} = \gamma_{q0} + \gamma_{q1}W_{ij} + ... u_{qi}
+\]</span></p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="lecture-5-2.html#cb30-1"></a>mod15 &lt;-<span class="st"> </span><span class="kw">glmer</span>(Repeat <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>schoolID), <span class="dt">data =</span> dat, <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;logit&quot;</span>))</span></code></pre></div>
+<ol style="list-style-type: decimal">
+<li><strong>The thing that gets us from the linear predictor to what we expect = link function.</strong></li>
+<li><strong>The thing that gets us from what we expect to what we see = family distribution.</strong></li>
+</ol>
+<p><strong>KEY POINT:</strong> <em>Typical</em> is not the same as population average due to non-linearlity!</p>
+<p>ICC - not so useful:</p>
 <ul>
-<li>Reports in Rmarkdown: <a href="https://www.stat.cmu.edu/~cshalizi/rmarkdown/" class="uri">https://www.stat.cmu.edu/~cshalizi/rmarkdown/</a></li>
-<li>Math in Rmd: <a href="https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html" class="uri">https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html</a></li>
-<li>Rmd example: <a href="http://www.math.mcgill.ca/yyang/regression/RMarkdown/example.html" class="uri">http://www.math.mcgill.ca/yyang/regression/RMarkdown/example.html</a></li>
+<li>ICC is the ratio of level-2 variance to total variance</li>
+<li>But different schools have different kids, and so different variances due to binomial</li>
+<li>There is no natural ICC ratio here</li>
+<li>Instead draw pictures and show people <strong>how much schools vary</strong>.</li>
 </ul>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="lecture-5-2.html#cb31-1"></a>mod15 &lt;-<span class="st"> </span><span class="kw">glmer</span>(Repeat <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>pped <span class="op">+</span><span class="st"> </span><span class="kw">msesc</span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>schoolID), <span class="dt">data =</span> dat, <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;logit&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="lecture-5-2.html#cb32-1"></a>dat<span class="op">$</span>eta_hat &lt;-<span class="st"> </span><span class="kw">predict</span>(mod15) <span class="co"># link scale</span></span>
+<span id="cb32-2"><a href="lecture-5-2.html#cb32-2"></a>dat<span class="op">$</span>eta_hat &lt;-<span class="st"> </span><span class="kw">predict</span>(mod15, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>) <span class="co"># response scale</span></span></code></pre></div>
+<div id="population-average-versus-individual-school" class="section level3">
+<h3>Population average versus individual school</h3>
+<p>Answering the question: what is the association between <code>pped</code> and response <strong>at a specific school</strong>.</p>
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-<a href="table-of-contents.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="lecture-5-1.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="lecture-5-3.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -308,7 +345,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/IQSS/dss-linear-mixed-models/edit/master/index.Rmd",
+"link": "https://github.com/IQSS/dss-linear-mixed-models/edit/master/05_Generalized_linear_models.Rmd",
 "text": "Edit"
 },
 "history": {
