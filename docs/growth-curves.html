@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Growth curves | Linear Mixed Models</title>
+  <meta name="description" content="Growth curves | Linear Mixed Models" />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Growth curves | Linear Mixed Models" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Growth curves | Linear Mixed Models" />
+  <meta name="github-repo" content="stevenworthington/dss-linear-mixed-models" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Growth curves | Linear Mixed Models" />
+  
+  <meta name="twitter:description" content="Growth curves | Linear Mixed Models" />
+  
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="mixed-effects-models.html"/>
+<link rel="next" href="many-level-models.html"/>
+<script src="libs/header-attrs-2.3/header-attrs.js"></script>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Linear Mixed Models</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Introduction</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#table-of-contents"><i class="fa fa-check"></i>Table of Contents</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#authors-and-sources"><i class="fa fa-check"></i>Authors and Sources</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="fixed-effects-models.html"><a href="fixed-effects-models.html"><i class="fa fa-check"></i>Fixed effects models</a>
+<ul>
+<li class="chapter" data-level="" data-path="fixed-effects-models.html"><a href="fixed-effects-models.html#lecture-1.2"><i class="fa fa-check"></i>Lecture 1.2</a></li>
+<li class="chapter" data-level="" data-path="fixed-effects-models.html"><a href="fixed-effects-models.html#lecture-2.1"><i class="fa fa-check"></i>Lecture 2.1</a>
+<ul>
+<li class="chapter" data-level="" data-path="fixed-effects-models.html"><a href="fixed-effects-models.html#fixed-effects-regression"><i class="fa fa-check"></i>Fixed effects regression</a></li>
+<li class="chapter" data-level="" data-path="fixed-effects-models.html"><a href="fixed-effects-models.html#level-1-predictors"><i class="fa fa-check"></i>Level 1 predictors</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="mixed-effects-models.html"><a href="mixed-effects-models.html"><i class="fa fa-check"></i>Mixed effects models</a>
+<ul>
+<li class="chapter" data-level="" data-path="mixed-effects-models.html"><a href="mixed-effects-models.html#lecture-2.3"><i class="fa fa-check"></i>Lecture 2.3</a></li>
+<li class="chapter" data-level="" data-path="mixed-effects-models.html"><a href="mixed-effects-models.html#lecture-2.4"><i class="fa fa-check"></i>Lecture 2.4</a>
+<ul>
+<li class="chapter" data-level="" data-path="mixed-effects-models.html"><a href="mixed-effects-models.html#modeling-assumptions"><i class="fa fa-check"></i>Modeling assumptions</a></li>
+<li class="chapter" data-level="" data-path="mixed-effects-models.html"><a href="mixed-effects-models.html#centering-your-covariates"><i class="fa fa-check"></i>Centering your covariates</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="mixed-effects-models.html"><a href="mixed-effects-models.html#lecture-2.5"><i class="fa fa-check"></i>Lecture 2.5</a>
+<ul>
+<li class="chapter" data-level="" data-path="mixed-effects-models.html"><a href="mixed-effects-models.html#part-i-within-versus-between-centering"><i class="fa fa-check"></i>Part I: within versus between centering</a></li>
+<li class="chapter" data-level="" data-path="mixed-effects-models.html"><a href="mixed-effects-models.html#part-ii-concept-of-maximum-likelihood"><i class="fa fa-check"></i>Part II: Concept of maximum likelihood</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="mixed-effects-models.html"><a href="mixed-effects-models.html#lecture-2.6"><i class="fa fa-check"></i>Lecture 2.6</a>
+<ul>
+<li class="chapter" data-level="" data-path="mixed-effects-models.html"><a href="mixed-effects-models.html#confidence-intervals"><i class="fa fa-check"></i>confidence intervals</a></li>
+<li class="chapter" data-level="" data-path="mixed-effects-models.html"><a href="mixed-effects-models.html#inference"><i class="fa fa-check"></i>Inference</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="growth-curves.html"><a href="growth-curves.html"><i class="fa fa-check"></i>Growth curves</a>
+<ul>
+<li class="chapter" data-level="" data-path="growth-curves.html"><a href="growth-curves.html#lecture-3.1"><i class="fa fa-check"></i>Lecture 3.1</a>
+<ul>
+<li class="chapter" data-level="" data-path="growth-curves.html"><a href="growth-curves.html#growth-curves-1"><i class="fa fa-check"></i>Growth curves</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="growth-curves.html"><a href="growth-curves.html#lecture-3.2"><i class="fa fa-check"></i>Lecture 3.2</a>
+<ul>
+<li class="chapter" data-level="" data-path="growth-curves.html"><a href="growth-curves.html#quadratic-growth-rb-chapter-6"><i class="fa fa-check"></i>Quadratic growth (R&amp;B chapter 6)</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="growth-curves.html"><a href="growth-curves.html#lecture-3.2-1"><i class="fa fa-check"></i>Lecture 3.2</a>
+<ul>
+<li class="chapter" data-level="" data-path="growth-curves.html"><a href="growth-curves.html#model-building"><i class="fa fa-check"></i>Model Building</a></li>
+<li class="chapter" data-level="" data-path="growth-curves.html"><a href="growth-curves.html#adding-covariates"><i class="fa fa-check"></i>Adding covariates</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="growth-curves.html"><a href="growth-curves.html#lecture-3.3"><i class="fa fa-check"></i>Lecture 3.3</a>
+<ul>
+<li class="chapter" data-level="" data-path="growth-curves.html"><a href="growth-curves.html#comparing-models"><i class="fa fa-check"></i>Comparing models</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="many-level-models.html"><a href="many-level-models.html"><i class="fa fa-check"></i>Many level models</a>
+<ul>
+<li class="chapter" data-level="" data-path="many-level-models.html"><a href="many-level-models.html#lecture-4.1"><i class="fa fa-check"></i>Lecture 4.1</a>
+<ul>
+<li class="chapter" data-level="" data-path="many-level-models.html"><a href="many-level-models.html#level-2-covariates"><i class="fa fa-check"></i>Level 2 covariates</a></li>
+<li class="chapter" data-level="" data-path="many-level-models.html"><a href="many-level-models.html#level-3-covariates"><i class="fa fa-check"></i>Level 3 covariates</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="many-level-models.html"><a href="many-level-models.html#lecture-4.2-a"><i class="fa fa-check"></i>Lecture 4.2 (A)</a></li>
+<li class="chapter" data-level="" data-path="many-level-models.html"><a href="many-level-models.html#lecture-4.2-b"><i class="fa fa-check"></i>Lecture 4.2 (B)</a></li>
+<li class="chapter" data-level="" data-path="many-level-models.html"><a href="many-level-models.html#lecture-4.3"><i class="fa fa-check"></i>Lecture 4.3</a>
+<ul>
+<li class="chapter" data-level="" data-path="many-level-models.html"><a href="many-level-models.html#potential-outcomes"><i class="fa fa-check"></i>Potential outcomes</a></li>
+<li class="chapter" data-level="" data-path="many-level-models.html"><a href="many-level-models.html#cluster-randomized-trials"><i class="fa fa-check"></i>Cluster Randomized Trials</a></li>
+<li class="chapter" data-level="" data-path="many-level-models.html"><a href="many-level-models.html#multisite-experiments"><i class="fa fa-check"></i>Multisite Experiments</a></li>
+</ul></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Linear Mixed Models</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="growth-curves" class="section level1">
+<h1>Growth curves</h1>
+<p><strong>Longitudinal data and growth curves</strong></p>
+<div id="lecture-3.1" class="section level2">
+<h2>Lecture 3.1</h2>
+<p>Individuals are <strong>level 2</strong>, time is <strong>level 1</strong>. Observations about individuals that do not change are level 2, while observations about individuals that do change are level 1. Essentially, individuals are sampled, and then time points within individuals are sampled (not they’re not really sampled).</p>
+<ol style="list-style-type: decimal">
+<li><p>Clustered data: we observed a bunch of students in a school. The students have <strong>no order</strong>. They are independent within the school.</p></li>
+<li><p>Longitudinal data: we observe a bunch of times. The times are <strong>ordered</strong>. They are not independent within the student. This ordering of observations is meaningful. So, time points closer to each other are more correlated with each other.</p></li>
+</ol>
+<p>Visualizations important with longitudinal data. <strong>Always look at your individuals</strong> by plotting their outcome data over time.</p>
+<p><strong>Marginal model:</strong> summary / average accross all individuals.</p>
+<p>Read Willet and Singer book chapters.</p>
+<p><strong>Panel studies:</strong> track everyone at the same sequence of time points. Timepoints are called “waves”.</p>
+<p><strong>Cohort studies:</strong> follow a group. But, check-in times can be variable.</p>
+<p><strong>Balance:</strong> For panel data, when there is an observation for each person at each time point.</p>
+<div id="growth-curves-1" class="section level3">
+<h3>Growth curves</h3>
+<p>R&amp;B pg 164</p>
+<p>For each child, they have initial knowledge <span class="math inline">\(\pi_{0i}\)</span> and rate of increase <span class="math inline">\(\pi_{1i}\)</span>. Make the intercept meaningful - at onset of preschool or something.</p>
+<p>R&amp;B pg 163-164
+Classic random slope model:</p>
+<p><span class="math display">\[
+Y_{ti} = \pi_{0i} + \pi_{1i}\alpha_{ti} + \epsilon_{ti} \\
+\epsilon_{ti} \sim N(0, \sigma^2) \\
+\pi_{0i} = \beta_{00} + r_{0i} \\
+\pi_{1i} = \beta_{10} + r_{1i} \\
+(r_{0i}, r_{1i}) \sim N(\bf{0}, \Sigma)
+\]</span>
+Fixed effects: <span class="math inline">\(\beta_{00}\)</span>, <span class="math inline">\(\beta_{10}\)</span></p>
+<p>Variance components: <span class="math inline">\(\sigma^2\)</span>, <span class="math inline">\(\tau_{00}\)</span>, <span class="math inline">\(\tau_{11}\)</span>, <span class="math inline">\(\tau_{10}\)</span></p>
+<p>Betas are now parameters at <strong>level 2</strong> because we added in another level below individuals.</p>
+</div>
+</div>
+<div id="lecture-3.2" class="section level2">
+<h2>Lecture 3.2</h2>
+<p><strong>Quadratic Growth Models (Part I)</strong></p>
+<p><strong>Questions to ask</strong>:
+1. <strong>Is there variation?</strong> — are these children different from each other?
+2. <strong>What explains this variation?</strong> — what variables explain why children are different from one another?</p>
+<p><strong>3 random effects per student:</strong>
+1. Random intercept (<span class="math inline">\(\pi_{0i}\)</span>)
+2. Random slope (<span class="math inline">\(\pi_{1i}\)</span>)
+3. Random acceleration /curvature (growth) (<span class="math inline">\(\pi_{2i}\)</span>)</p>
+<p>Data is structured like this:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">ID</th>
+<th align="center"><span class="math inline">\(\alpha\)</span></th>
+<th align="center"><span class="math inline">\(\gamma\)</span></th>
+<th align="left">Home Language</th>
+<th align="left">HRS</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">101</td>
+<td align="center"><span class="math inline">\(\alpha_{1, 101}\)</span> 0</td>
+<td align="center">-0.5</td>
+<td align="left">0</td>
+<td align="left">80</td>
+</tr>
+<tr class="even">
+<td align="left">101</td>
+<td align="center"><span class="math inline">\(\alpha_{2, 101}\)</span> 4</td>
+<td align="center">0.2</td>
+<td align="left">0</td>
+<td align="left">80</td>
+</tr>
+<tr class="odd">
+<td align="left">101</td>
+<td align="center"><span class="math inline">\(\alpha_{3, 101}\)</span> 5</td>
+<td align="center">0.4</td>
+<td align="left">0</td>
+<td align="left">80</td>
+</tr>
+<tr class="even">
+<td align="left">101</td>
+<td align="center"><span class="math inline">\(\alpha_{4, 101}\)</span> 8</td>
+<td align="center">0.7</td>
+<td align="left">0</td>
+<td align="left">80</td>
+</tr>
+<tr class="odd">
+<td align="left">208</td>
+<td align="center"><span class="math inline">\(\alpha_{1, 208}\)</span></td>
+<td align="center">-0.8</td>
+<td align="left">1</td>
+<td align="left">80</td>
+</tr>
+</tbody>
+</table>
+<p>First column after ID is time.</p>
+<p>Two level notation: (here, <span class="math inline">\(a\)</span> is age - a level one predictor)
+<span class="math display">\[
+Y_{ti} = \pi_{0i} + \pi_{1i}a_{ti} + \epsilon_{ti} \\
+\epsilon_{ti} \sim N(0, \sigma^2) \\
+\pi_{0i} = \beta_{00} + \beta_{01}X_i + r_{0i} \\
+\pi_{1i} = \beta_{10} + \beta_{11}X_i + r_{1i} \\
+(r_{0i}, r_{1i}) \sim N(\bf{0}, \Sigma)
+\]</span></p>
+<p>Single level notation:
+<span class="math display">\[
+Y_{ti} = \pi_{0i} + \pi_{1i}a_{ti} + \epsilon_{ti} \\
+= (\beta_{00} + \beta_{01}X_i + r_{0i}) + (\beta_{10} + \beta_{11}X_i + r_{1i}) + a_{ti} + \epsilon_{ti} \\
+= \beta_{00} + \beta_{01}X_i + r_{0i} + \beta_{10}a_{ti} + \beta_{11}X_i\alpha_{ti} + r_{1i}a_{ti} + \epsilon_{ti} \\
+= \beta_{00} + \beta_{01}X_i + \beta_{10}a_{ti} + \beta_{11}X_ia_{ti} + (r_{0i} + r_{1i}a_{ti} + \epsilon_{ti})
+\]</span>
+The random effects in the parentheses on the final line can be thought of as residuals.</p>
+<p>Prediction:
+<span class="math display">\[
+X_i = 2, a_{ti} = 5 \\
+\beta_{00} + \beta_{01}2 + \beta_{10}5 + \beta_{11}2.5
+\]</span></p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="growth-curves.html#cb17-1"></a>mod7 &lt;-<span class="st"> </span><span class="kw">lmer</span>(Y <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>age <span class="op">*</span><span class="st"> </span>(language <span class="op">+</span><span class="st"> </span>hours) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>age <span class="op">|</span><span class="st"> </span>StudentID), <span class="dt">data =</span> dat)</span></code></pre></div>
+<p>When using growth models, we may not care about level 1. Level 2 is where we get at the question of growth. Here, <span class="math inline">\(t\)</span> is the observation number.</p>
+<p><span class="math display">\[
+Y_{ti} = \pi_{0i} + \pi_{1i}a_{ti} + \epsilon_{ti} \\
+\epsilon_{ti} \sim N(0, \sigma^2) \\
+\pi_{0i} = \beta_{00} + \beta_{01}LANG_i + \beta_{02}HRS_i + r_{0i} \\
+\pi_{1i} = \beta_{10} + \beta_{11}LANG_i + \beta_{12}HRS_i + r_{1i} \\
+(r_{0i}, r_{1i}) \sim N(\bf{0}, \Sigma)
+\]</span></p>
+<p>When looking at growth rates over time, a small growth rate difference can mean a lot, since the difference in growth rate gets compounded over time. It’s best to get some predictions for each kid over the full length of time, then compare.</p>
+<div id="quadratic-growth-rb-chapter-6" class="section level3">
+<h3>Quadratic growth (R&amp;B chapter 6)</h3>
+<p><strong>Research question</strong>: Describe the association between maternal speech and child’s vocabulary.</p>
+<p>Very important to pick where the intercept is for growth models — need to mean center. L is an important centering decision - in this case, L = 12 months (that’s the intercept). But, may be better to put L within the bounds of the observed data.</p>
+<ol style="list-style-type: decimal">
+<li><span class="math inline">\(\pi_{0i}\)</span> = status at L</li>
+<li><span class="math inline">\(\pi_{1i}\)</span> = instantaneous (average) growth at L</li>
+<li><span class="math inline">\(\pi_{2i}\)</span> = curvature / acceleration</li>
+</ol>
+<p>Unconditional Quadratic Growth Model:
+<span class="math display">\[
+Y_{ti} = \pi_{0i} + \pi_{1i}(a_{ti} - L) + \pi_{2i}(a_{ti} - L)^2 + \epsilon_{ti} \\
+\epsilon_{ti} \sim N(0, \sigma^2) \\
+\pi_{0i} = \gamma_{00} + u_{0i} \\
+\pi_{1i} = \gamma_{01} + u_{1i} \\
+\pi_{2i} = \gamma_{02} + u_{2i} \\
+(u_{0i}, u_{1i}, u_{2i}) \sim N(\bf{0}, \Sigma)
+\]</span>
+Three random effects — <em>all correlated</em>. We have a fixed centering constant <span class="math inline">\(L\)</span> (this is a constant chosen by you, not a parameter).</p>
+<p>Anything with an <span class="math inline">\(i\)</span> subscript is for an individual student. Anything without a subscript is a fixed effect — this is the shared structual component of the model.</p>
+<p>Number of parameters we are estimating:</p>
+<ol style="list-style-type: decimal">
+<li>3 fixed effects: <span class="math inline">\(\gamma_{00}, \gamma_{01}, \gamma_{02}\)</span></li>
+<li>6 random effects: the diagonals of the matrix: <span class="math inline">\(\tau_{00}, \tau_{11}, \tau_{22}\)</span>. next are the covariances: <span class="math inline">\(\tau_{01}, \tau_{02}, \tau_{12}\)</span></li>
+<li>1 residual term: <span class="math inline">\(\epsilon_{ti}\)</span></li>
+</ol>
+</div>
+</div>
+<div id="lecture-3.2-1" class="section level2">
+<h2>Lecture 3.2</h2>
+<p><strong>Quadratic Growth Models (Part II)</strong></p>
+<p>R&amp;B Chapter 6 pg 169-176</p>
+<p>Anatomy of a quadratic curve:
+<span class="math display">\[
+y = \pi_{oi} + \pi_{1i}(X - L) + \pi_{2i}(X - L)^2 \\
+L = 19 \\
+X = {18, 19, 20} \\ 
+\pi_{0i} = 1, \pi_{1i} = 2, \pi_{2i} = 0.5
+\]</span>
+Evaluate y at the above Xs and graph it.</p>
+<p>Predict vocabulary for an average / typical child (assuming the random effects and residuals are zero) at X = 20 and X = 12:
+<span class="math display">\[
+\hat{y} = -45.05 + 12.14(20 - 12) + 1.84(20 - 12)^2 \\
+= 170 \\
+\hat{y} = -45.05 + 12.14(12 - 12) + 1.84(12 - 12)^2 \\
+= -45.05
+\]</span></p>
+<p>If the random effects are not normally distributed (the ones from the <code>coef()</code> function in R), then this is evidence of model miss-specification. Probably, there is some omitted variable in the structural part of the model. If the random effects are grouped at the extremes, this may indicate that there’s a missing grouping variable in the fixed effects part of the model.</p>
+<p>Rate of growth at age <span class="math inline">\(a\)</span> for kid <span class="math inline">\(i\)</span> is the derivitive of our curve at age <span class="math inline">\(a\)</span>.</p>
+<div id="model-building" class="section level3">
+<h3>Model Building</h3>
+<p><strong>How can we get a nice simple model given our data?</strong> (Cat lego picture)</p>
+<p>Model refinements:</p>
+<ol style="list-style-type: decimal">
+<li><p>Drop the intercept — no overall intercept or random intercept. We force the regression through the origin, which if we’ve centered the data at <span class="math inline">\(L = 12\)</span> the origin will be 12. So, kids at age 12 will have zero vocabularly. Our residuals only changed a little bit.</p></li>
+<li><p>Set expected rate of growth at age 12 to zero. (i.e., take out the linear fixed effect term, but leave in the linear random effect). Our residuals only changed a little bit.</p></li>
+</ol>
+</div>
+<div id="adding-covariates" class="section level3">
+<h3>Adding covariates</h3>
+<p>Can we explain our acceleration? Is maternal speech predictive of growth?</p>
+<p>Dropping main effects — a design decision:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="growth-curves.html#cb18-1"></a>M4A<span class="fl">.2</span> &lt;-<span class="st"> </span><span class="kw">lmer</span>(vocab <span class="op">~</span><span class="st"> </span><span class="dv">0</span> <span class="op">+</span><span class="st"> </span>age12sq<span class="op">:</span>sex <span class="op">+</span><span class="st"> </span>age12sq<span class="op">:</span>logmom <span class="op">+</span><span class="st"> </span>(<span class="dv">0</span> <span class="op">+</span><span class="st"> </span>age12 <span class="op">+</span><span class="st"> </span>age12sq <span class="op">|</span><span class="st"> </span>per), <span class="dt">dat =</span> dat.g0)</span></code></pre></div>
+<p>The above model says that mother’s vocabularly will increase the accelation of child’s acquisition of vocabularly. But, that the fixed rate of growth (i.e., linear growth) is fixed at zero.</p>
+</div>
+</div>
+<div id="lecture-3.3" class="section level2">
+<h2>Lecture 3.3</h2>
+<p><strong>piecewise linear growth model and model comparison (AIC)</strong></p>
+<p>Reading: Faraway ch 9. Rabe-Hesketh &amp; Skrondal: pp 227-264 logitudinal data structure, pp 278-282 missing data, pp 293-311 marginal models and error structures.</p>
+<p>Time varying questions are harder than time invariant questions.</p>
+<p><code>screenreg()</code> from <code>textregp</code> package (can it output SDs instead of variances?)</p>
+<p>Positive covariance term means that higher random slope goes with higher random intercept - so kids that start with higher reading skills also learn at a faster rate. Even if the difference in learning rate is small between the kids, over time this can equate to a large difference in their reading skills.</p>
+<p><span class="math display">\[
+covariance(A, B) = correlation \times SD_A \times SD_B \\
+correlation = \frac{covariance}{SD_A \times SD_B}
+\]</span></p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="growth-curves.html#cb19-1"></a>mod9 &lt;-<span class="st"> </span><span class="kw">lmer</span>(reading <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>time <span class="op">+</span><span class="st"> </span>gender <span class="op">+</span><span class="st"> </span>time <span class="op">:</span><span class="st"> </span>gender <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>time <span class="op">|</span><span class="st"> </span>id), <span class="dt">data =</span> dat)</span></code></pre></div>
+<div id="comparing-models" class="section level3">
+<h3>Comparing models</h3>
+<p><span class="math display">\[
+1 - Var(conditional model) / Var(unconditional model) = proportion of variance explained
+\]</span></p>
+<p><strong>Parametric growth curves</strong></p>
+<p>The most complex model you can entertain is one where the number of parameters is n-1, where n is the number of observations. So if there are 4 data points for each kid, you can have at most a quadratic model.</p>
+<p>Can use a log transform to have a steep start to the growth, then have it level out.</p>
+<p><strong>Selecting a growth curve</strong></p>
+<ol style="list-style-type: decimal">
+<li>use theory / research question</li>
+<li>use a curve that works well overall</li>
+<li>simple is better</li>
+</ol>
+<p><strong>Piecewise growth</strong></p>
+<p>Piecewise growth is inherently cumulative.</p>
+<p><span class="math display">\[
+reading_{it} = \pi_{0i} + \pi_{1i}TimeA_{it} + \pi_{2i}TimeB_{it} + \epsilon_{it}
+\]</span></p>
+<p>Look at cumulative school time and cumulative summer time (do book keeping based on data collection)</p>
+<p><strong>Option 1:</strong> school time / summer time separately:</p>
+<p><span class="math display">\[
+reading_{it} = \pi_{0i} + \pi_{1i}School_{it} + \pi_{2i}Summer_{it} + \epsilon_{it} \\
+\pi_{0i} = \gamma_{00} + u_{0i} \\
+\pi_{1i} = \gamma_{10} + u_{1i} \\
+\pi_{2i} = \gamma_{20} + u_{2i} 
+\]</span></p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="growth-curves.html#cb20-1"></a>mod10 &lt;-<span class="st"> </span><span class="kw">lmer</span>(reading <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>school <span class="op">+</span><span class="st"> </span>summer <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>school <span class="op">+</span><span class="st"> </span>summer <span class="op">|</span><span class="st"> </span>id), <span class="dt">data =</span> dat)</span></code></pre></div>
+<p><strong>Option 2:</strong> increment / decrement — like an interaction for the change in slope at a specific time point:</p>
+<p><span class="math display">\[
+reading_{it} = \pi_{0i} + \pi_{1i}Time_{it} + \pi_{2i}Summer_{it} + \epsilon_{it} \\
+\pi_{0i} = \gamma_{00} + u_{0i} \\
+\pi_{1i} = \gamma_{10} + u_{1i} \\
+\pi_{2i} = \gamma_{20} + u_{2i} 
+\]</span></p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="growth-curves.html#cb21-1"></a>mod11 &lt;-<span class="st"> </span><span class="kw">lmer</span>(reading <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>time <span class="op">+</span><span class="st"> </span>summer <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>time <span class="op">+</span><span class="st"> </span>summer <span class="op">|</span><span class="st"> </span>id), <span class="dt">data =</span> dat)</span></code></pre></div>
+<p>These two models are the same; they just have different parameterizations.</p>
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="mixed-effects-models.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="many-level-models.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/IQSS/dss-linear-mixed-models/edit/master/03_Growth_curves.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["Linear_mixed_models.pdf", "Linear_mixed_models.epub"],
+"toc": {
+"collapse": "section",
+"scroll_highlight": true
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

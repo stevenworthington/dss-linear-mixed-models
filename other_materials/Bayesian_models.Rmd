@@ -1,0 +1,43 @@
+
+```{r, echo=FALSE, results="hide"}
+hsb <- read.csv("dataSets/hsb.csv")
+hsb <- within(hsb, {
+  sector <- factor(schtype, levels = 0:1, labels = c("public", "catholic"))
+  id <- factor(schid)
+  math <- mathach
+})
+
+library(lme4)
+```
+
+# Bayesian models
+
+## Lecture ST.2
+
+**Our possible friend Stan or fitting models with a very flexible Bayesian modeling framework**
+
+prob(something given evidence) = prob(evidence given something) prob(something) / prob(evidence)
+prob(A | B) = prob(B | A) prob(A) / prob(B)
+prob(truth | data) = prob(data | truth) prob(truth) / prob(data)
+
+prob(A) = prior
+prob(B | A) = likelihood
+prob(A | B) = posterior
+prob(B) = data (just a scaling constant - does not involve the parameters at all)
+
+The cartoon guide to statistics. Archery example.
+
+Credible interval and confidence intervals converge asymptotically.
+
+MCMC
+Monte Carlo = simulation
+Markov chain = how the simulation works
+
+Stan = a big simulator
+
+Shrinkage: priors shrink the ML estimate towards the prior belief.
+
+Full Bayes tend to shrink less than Empirical Bayes (unless there's a strong prior)
+
+No empirical Bayes step needed in a Bayesian MLM - you just get individual random effect parameters directly from the model, rather than using the model to predict them.
+

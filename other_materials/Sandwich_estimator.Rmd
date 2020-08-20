@@ -1,0 +1,113 @@
+
+```{r, echo=FALSE, results="hide"}
+hsb <- read.csv("dataSets/hsb.csv")
+hsb <- within(hsb, {
+  sector <- factor(schtype, levels = 0:1, labels = c("public", "catholic"))
+  id <- factor(schid)
+  math <- mathach
+})
+
+library(lme4)
+```
+
+# Sandwich estimator
+
+## Lecture 6.1
+
+**OLS and the "Sandwich" Standard Error**
+
+**A robust Haiku**
+
+T-stat looks too good.  
+Use robust standard errors.  
+Significance gone.
+
+The standard error and standard error estimate is a function of the randomness in the residuals only --- this is the only random part of an OLS model.
+
+**Core idea:** use the residuals to get a rough (bad) estimate of the variability of the individual observations, and average to get good overall performance.
+
+Canonical regression formula for OLS:
+$$
+Y = \bf{X\beta} + \epsilon
+$$
+where $\bf{\beta}$ is a p-vector of coefficients to be estimated, $\bf{X}$ is a matrix where there is a column of 1s as the first "covariate" and beta will have an initial coefficient for the intercept corresponding to this column of 1s, $Y$ is an n column of outcomes, and $\epsilon$ is an n vector of residuals.
+
+We can think of a regression (with fixed y) as a single matrix multiply. This is useful when thinking about how the residual *vector*, $\epsilon = (\epsilon_1, ..., \epsilon_n)$, is random.
+
+Inverse = division, so the inverse of 5 would be 1/5, because if you multiply 1/5 by 5, you get 1 - which is the identity.
+
+HC2 is best? Maybe HC3.
+
+
+## Lecture 6.2
+
+**Cluster Robust Standard Errors**
+
+Building on heteroskedastic robust standard errors (the sandwich estimator) from last lecture...
+
+Cluster robust standard errors:
+
+1.  We use classic OLS to get *population* trends.
+2.  Then, if we believe clusters are themselves an independent sample, we can use residuals to get very bad estimates of residual structure for each cluster.
+3.  We then average to get decent overall estimates.
+
+This is a close sister to the sandwich, sharing the same intuition. All of this is only for the **fixed effects**.
+
+Big n by n matrix for residuals, which contains bad but unbiased estimates, then average over these to get better estimates. Also, a small p by p matrix for parameters.
+
+With clustered data, the observations within a cluster are correlated (i.e., the residuals for people within a cluster are similar). So, our residual covariance matrix is **NOT a diagonal matrix**.
+
+This leads to a block diagonal matrix. So, conditional on the overall trends (i.e., the fixed effects), we get a block diagonal matrix for the residuals.
+
+Our estimate of $\hat{\beta}$ is going to be the sum of a bunch of $\hat{\beta}$ for each cluster group - because we are essentially fitting separate regressions to each group and then aggregating the coefficients (while weighting them).
+
+The random intercept model says that the off-diagonals in the VCV matrix are the same, but when using cluster robust standard errors we say that we don't know what the off-diagonals are.
+
+When do we get big standard errors on our fixed effects? We get large variances compared to OLS when:
+
+1.  Covariates vary mostly across cluster rather than within cluster (note how a group level covariate only varies cross cluster!).
+2.  Errors within cluster are correlated so the omegas are non-zer (generally positive).
+3.  $N_g$ is large (many units inside a cluster).
+4.  Within-cluster regressor and error correlations are the same sign (which is typical).
+
+Take away messages:
+
+1. There can be a great loss of efficiency in OLS estimation if errors are correlated within cluster. ("More observations in the cluster doesn't tell you much that is new")
+2. But sometimes these methods give you *smaller* errors than you would expect
+
+Rule of thumb --- specify the clusters at the highest level. If you don't, then you'll be ignore some dependence between your units.
+
+Bell reading - fixed effects regression with cluster robust standard errors versus MLM.
+
+
+## Lecture 6.3
+
+**Fitting models with complex residual error structure**
+
+**Dataset:** national youth survey.
+
+We have longitudinal data measured at specific **waves**.
+
+We can fit a linear growth model, but we may worry that our within-student residuals are not iid (i.e., adjacent residuals tend to be similar - have the same sign).
+
+Two methods:
+1. overall residual $u_{ti}$ (using cluster robust standard errors)
+2. within-student residuals $r_{0i}$ $r_{1i}$ (using MLM)
+
+### Method 1
+
+Modeling:
+$$
+u_{ti} = r_i + \epsilon_{ti}, t = 1,...,5
+$$
+
+### Method 2
+
+R&B page 190
+
+1. Compound symmetry = distribution of the $u$ around the black line.
+2. AR1
+3. random slope - produces heteroskedastic residuals, since the slopes fan out over time
+4. random slopes with heteroskedasticity
+5. random slopes with unstructured
+

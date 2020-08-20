@@ -10,9 +10,6 @@ rmd_files:
   - "02_Mixed_effects_models.Rmd"
   - "03_Growth_curves.Rmd"
   - "04_Many_level_models.Rmd"
-  - "05_Generalized_linear_models.Rmd"
-  - "06_Sandwich_estimator.Rmd"
-  - "07_Bayesian_models.Rmd"
 
 delete_merged_file: true
 
