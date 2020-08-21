@@ -1,3 +1,9 @@
+# large lecture files
+
+lecture_slides/
+handouts/
+
+
 # History files
 .Rhistory
 .Rapp.history
